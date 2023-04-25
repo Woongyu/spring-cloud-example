@@ -19,7 +19,7 @@ public class MemberDetail {
     public static class Request {
 
         @NotNull
-        @JsonProperty("userNumber")
+        @JsonProperty("user_number")
         private Integer userNumber;
     }
 
@@ -30,10 +30,10 @@ public class MemberDetail {
     @NoArgsConstructor
     public static class Response extends BaseResponse {
 
-        @JsonProperty("userId")
+        @JsonProperty("user_id")
         private String userId;
 
-        @JsonProperty("userName")
+        @JsonProperty("user_name")
         private String userName;
     }
 
