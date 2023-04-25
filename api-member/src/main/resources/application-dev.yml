@@ -1,0 +1,8 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+location:
+  target-url:
+    member: http://api-member.default.svc.cluster.local:18080
