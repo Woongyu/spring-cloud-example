@@ -1,7 +1,7 @@
 package com.platform.member.advice;
 
-import com.platform.member.dto.common.BaseResponse;
-import com.platform.member.dto.enums.ErrorType;
+import com.platform.common.dto.BaseResponse;
+import com.platform.common.dto.enums.ErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

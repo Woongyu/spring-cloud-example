@@ -1,7 +1,7 @@
 package com.platform.member.controller;
 
 import com.platform.member.dto.MemberDetail;
-import com.platform.member.dto.common.BaseResponse;
+import com.platform.common.dto.BaseResponse;
 import com.platform.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
