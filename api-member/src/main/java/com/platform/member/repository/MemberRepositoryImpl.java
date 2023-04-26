@@ -62,4 +62,13 @@ public class MemberRepositoryImpl implements MemberRepository {
         Collections.shuffle(shuffledValues);
         return Flux.fromIterable(shuffledValues);
     }
+
+    @Override
+    public Integer findMaxUserId() {
+        return userMap.keySet()
+            .stream()
+            .mapToInt(Integer::intValue)
+            .max()
+            .orElse(Constant.ZERO);
+    }
 }

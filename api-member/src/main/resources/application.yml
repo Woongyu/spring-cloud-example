@@ -25,3 +25,7 @@ management:
         exclude: threaddump, heapdump
     health:
       show-details: always
+
+reactor:
+  schedulers:
+    defaultPoolSize: 4

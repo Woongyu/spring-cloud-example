@@ -1,9 +1,12 @@
 package com.platform.member.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.platform.common.constant.Constant;
 import com.platform.common.dto.BaseResponse;
 import com.platform.common.dto.enums.ErrorType;
 import com.platform.common.exception.APIException;
+import com.platform.common.util.CommonUtil;
 import com.platform.member.dto.MemberDetail;
 import com.platform.member.dto.PostResponse;
 import com.platform.member.dto.UserActivityResponse;
@@ -20,6 +23,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.ParallelFlux;
+import reactor.core.scheduler.Schedulers;
+
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -34,6 +41,9 @@ public class MemberService {
     @Value("${location.target-url.board}")
     private String boardUrl;
 
+    @Value("${reactor.schedulers.defaultPoolSize}")
+    private int defaultPoolSize;
+
     public Mono<MemberDetail.Response> getMemberById(Integer userId) {
         return Mono.fromSupplier(() -> memberRepository.findByUserId(userId)
             .map(memberEntity -> {
@@ -45,7 +55,6 @@ public class MemberService {
     }
 
     public Mono<BaseResponse> createMember(MemberDetail.Request request) {
-
         MemberEntity entity = new MemberEntity();
         BeanUtils.copyProperties(request, entity);
 
@@ -108,5 +117,48 @@ public class MemberService {
             userActivityResponse.setPosts(post);
             return Mono.just(userActivityResponse);
         });
+    }
+
+    public Flux<PostResponse> getBestPostByMember() {
+        ParallelFlux<PostResponse> parallelFlux = Flux.range(Constant.ONE, memberRepository.findMaxUserId())
+            .parallel(defaultPoolSize)
+            .runOn(Schedulers.parallel())
+            .flatMap(userId -> webClient.mutate()
+                .baseUrl(boardUrl)
+                .build()
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                    .path("/api/board/posts")
+                    .queryParam("user_id", userId)
+                    .build())
+                .retrieve()
+                .bodyToFlux(PostResponse.class)
+                .onErrorResume(WebClientResponseException.class, this::getRspCodeAndMsg));
+
+        return parallelFlux.sequential();
+    }
+
+    private Mono<PostResponse> getRspCodeAndMsg(WebClientResponseException e) {
+        ErrorType errorType = e.getStatusCode() == HttpStatus.NOT_FOUND
+            ? ErrorType.NO_DATA
+            : ErrorType.findByErrorType(e.getStatusCode().value());
+        String responseBody = e.getResponseBodyAsString();
+        String rspCode = errorType.getCode();
+        String rspMsg = errorType.getMessage();
+
+        try {
+            Map<String, Object> resultMap = mapper.readValue(responseBody, CommonUtil.JsonTypeRef);
+
+            if (resultMap.containsKey(Constant.RSP_CODE)) {
+                rspCode = (String) resultMap.get(Constant.RSP_CODE);
+            }
+            if (resultMap.containsKey(Constant.RSP_MSG)) {
+                rspMsg = (String) resultMap.get(Constant.RSP_MSG);
+            }
+        } catch (JsonProcessingException jsonException) {
+            log.warn("Http error with no json body");
+        }
+
+        return Mono.just(new PostResponse(rspCode, rspMsg));
     }
 }

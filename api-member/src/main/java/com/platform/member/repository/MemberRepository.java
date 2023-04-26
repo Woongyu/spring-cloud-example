@@ -11,4 +11,6 @@ public interface MemberRepository {
     Integer save(MemberEntity entity);
 
     Flux<MemberEntity> findAll();
+
+    Integer findMaxUserId();
 }
