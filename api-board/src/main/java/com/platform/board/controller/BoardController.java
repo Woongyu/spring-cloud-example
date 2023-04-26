@@ -28,7 +28,7 @@ public class BoardController {
 
         return boardService.getPostsByUserId(userId)
             .collectList()
-            .map(posts -> ResponseEntity.ok(posts))
+            .map(ResponseEntity::ok)
             .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }
