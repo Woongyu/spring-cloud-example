@@ -35,12 +35,11 @@ public class MemberController {
             })
     public ResponseEntity<MemberDetail.Response> memberDetail(
             @RequestBody @Valid MemberDetail.Request request) {
-        log.info("memberDetail request [{}]", request.toString());
+        log.info("Detail request [{}]", request.toString());
 
         HttpStatus status = HttpStatus.OK;
 
         MemberDetail.Response response = new MemberDetail.Response();
-        response.setUserId("test");
         response.setUserName("GilDong Hong");
 
         return ResponseEntity.status(status)
