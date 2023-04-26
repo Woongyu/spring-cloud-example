@@ -48,4 +48,10 @@ public class CustomExceptionHandler {
         BaseResponse response = e.getResponse();
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatus()));
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler
+    public ResponseEntity<BaseResponse> runtimeException(RuntimeException e) {
+        return ResponseEntity.internalServerError().body(new BaseResponse(ErrorType.API_ERROR));
+    }
 }
