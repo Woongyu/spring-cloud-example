@@ -2,6 +2,7 @@ package com.platform.member.advice;
 
 import com.platform.common.dto.BaseResponse;
 import com.platform.common.dto.enums.ErrorType;
+import com.platform.common.exception.APIException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,6 @@ public class CustomExceptionHandler {
         e.getBindingResult()
             .getAllErrors()
             .forEach(error -> errors.put(((FieldError) error).getField(), error.getDefaultMessage()));
-
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -38,8 +38,20 @@ public class CustomExceptionHandler {
 
         HttpStatus status = e.getStatus();
         BaseResponse response = new BaseResponse(ErrorType.findByErrorType(status.value()));
+        return ResponseEntity.status(status).body(response);
+    }
 
-        return ResponseEntity.status(status)
-            .body(response);
+    @ExceptionHandler(APIException.class)
+    public ResponseEntity<BaseResponse> handleAPIException(APIException e) {
+        log.error("APIException ::", e);
+
+        BaseResponse response = e.getResponse();
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatus()));
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler
+    public ResponseEntity<BaseResponse> runtimeException(RuntimeException e) {
+        return ResponseEntity.internalServerError().body(new BaseResponse(ErrorType.API_ERROR));
     }
 }

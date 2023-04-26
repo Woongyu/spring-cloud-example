@@ -1,8 +1,9 @@
 package com.platform.member.controller;
 
-import com.platform.member.dto.MemberDetail;
 import com.platform.common.dto.BaseResponse;
+import com.platform.member.dto.MemberDetail;
 import com.platform.member.dto.PostResponse;
+import com.platform.member.dto.UserActivityResponse;
 import com.platform.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +22,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Tag(name = "회원 정보", description = "Member API")
 @Validated
@@ -60,8 +60,16 @@ public class MemberController {
         return memberService.getAllMembers();
     }
 
-    @GetMapping("/posts")
-    public Mono<List<PostResponse>> getMemberPosts(@RequestParam("user_id") int userId) {
-        return memberService.getBoardPosts(userId);
+    @Operation(summary = "유저 활동 현황 조회", description = "특정 유저의 활동 현황을 조회합니다.")
+    @GetMapping("/member/activity")
+    public Mono<UserActivityResponse> getUserActivity(@RequestParam("user_id") int userId) {
+        return memberService.getUserActivity(userId);
+    }
+
+    @Operation(summary = "멤버별 최고 인기 게시물 조회",
+        description = "모든 유저에 대한 가장 좋아요를 많이 받은 최고의 게시물을 조회합니다.")
+    @GetMapping("/members/best-post")
+    public Flux<PostResponse> getBestPostByMember() {
+        return memberService.getBestPostByMember();
     }
 }

@@ -1,5 +1,6 @@
 package com.platform.member.repository;
 
+import com.platform.common.constant.Constant;
 import com.platform.member.entity.MemberEntity;
 import com.platform.common.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MemberRepositoryImpl implements MemberRepository {
 
     private final Map<Integer, MemberEntity> userMap = new ConcurrentHashMap<>();
-    private final AtomicInteger globalIndex = new AtomicInteger(1);
+    private final AtomicInteger globalIndex = new AtomicInteger(Constant.ONE);
 
     @PostConstruct
     private void init() {
@@ -48,9 +49,10 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Integer save(MemberEntity entity) {
-        entity.setUserId(globalIndex.get());
+        int userId = globalIndex.get();
+        entity.setUserId(userId);
         userMap.put(globalIndex.getAndIncrement(), entity);
-        return globalIndex.get();
+        return userId;
     }
 
     @Override
@@ -59,5 +61,14 @@ public class MemberRepositoryImpl implements MemberRepository {
         List<MemberEntity> shuffledValues = new ArrayList<>(userMap.values());
         Collections.shuffle(shuffledValues);
         return Flux.fromIterable(shuffledValues);
+    }
+
+    @Override
+    public Integer findMaxUserId() {
+        return userMap.keySet()
+            .stream()
+            .mapToInt(Integer::intValue)
+            .max()
+            .orElse(Constant.ZERO);
     }
 }
