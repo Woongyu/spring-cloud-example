@@ -5,7 +5,7 @@ import java.util.Random;
 
 public final class CommonUtil {
     public static final Random CommonRandom = new SecureRandom();
-    public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public static String generateUserName() {
         final String[] firstName = {"효리", "민수", "길동", "효복", "유지", "예진", "바다", "하늘"};
