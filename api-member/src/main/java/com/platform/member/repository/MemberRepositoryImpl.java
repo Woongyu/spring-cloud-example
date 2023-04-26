@@ -4,9 +4,13 @@ import com.platform.member.entity.MemberEntity;
 import com.platform.member.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,7 +48,16 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Integer save(MemberEntity entity) {
+        entity.setUserId(globalIndex.get());
         userMap.put(globalIndex.getAndIncrement(), entity);
         return globalIndex.get();
+    }
+
+    @Override
+    public Flux<MemberEntity> findAll() {
+        // 무작위로 섞어서 반환
+        List<MemberEntity> shuffledValues = new ArrayList<>(userMap.values());
+        Collections.shuffle(shuffledValues);
+        return Flux.fromIterable(shuffledValues);
     }
 }

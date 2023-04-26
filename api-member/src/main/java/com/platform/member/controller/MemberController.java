@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
@@ -45,5 +46,14 @@ public class MemberController {
         log.info("Create request [{}]", request.toString());
 
         return memberService.createMember(request);
+    }
+
+    @Operation(summary = "회원 전체 목록 조회", description = "회원 전체 목록을 조회하는 API입니다.")
+    @GetMapping(value = "/members",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MemberDetail.Response> getMemberList() {
+        log.info("Get all members");
+
+        return memberService.getAllMembers();
     }
 }

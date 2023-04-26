@@ -42,6 +42,10 @@ public class MemberDetail {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Response extends BaseResponse {
 
+        @JsonProperty("user_id")
+        @JsonFormat(shape = JsonFormat.Shape.STRING)
+        private Integer userId;
+
         @JsonProperty("user_name")
         private String userName;
 

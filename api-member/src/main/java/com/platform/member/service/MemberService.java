@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -44,5 +45,18 @@ public class MemberService {
                 }
             })
             .doOnError(throwable -> log.error("Error: {}", throwable.getMessage()));
+    }
+
+    public Flux<MemberDetail.Response> getAllMembers() {
+        return memberRepository.findAll()
+            .map(entity -> {
+                MemberDetail.Response response = new MemberDetail.Response();
+                BeanUtils.copyProperties(entity, response);
+                return response;
+            })
+            .onErrorResume(throwable -> {
+                log.error("Error: {}", throwable.getMessage());
+                return Flux.error(new RuntimeException("Failed to get all members"));
+            });
     }
 }
