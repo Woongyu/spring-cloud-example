@@ -17,7 +17,6 @@ public class CustomExceptionHandler {
     @ExceptionHandler({DecodingException.class, WebExchangeBindException.class})
     public ResponseEntity<BaseResponse> handleValidationException(Exception e) {
         BaseResponse response = new BaseResponse(ErrorType.INVALID_PARAMS);
-        //log.error("ValidationException!", e);
 
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatus()));
     }
