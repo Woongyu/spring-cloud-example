@@ -5,4 +5,4 @@ spring:
 
 location:
   target-url:
-    board: http://api-board.default.svc.cluster.local:18082
+    member: http://api-member.default.svc.cluster.local:18081

@@ -1,2 +1,4 @@
 rootProject.name = 'spring-cloud-example'
 include 'api-member'
+include 'api-board'
+
