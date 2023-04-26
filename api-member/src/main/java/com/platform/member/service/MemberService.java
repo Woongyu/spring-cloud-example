@@ -51,7 +51,7 @@ public class MemberService {
                     BaseResponse response = new BaseResponse();
                     return Mono.just(response);
                 } else {
-                    return Mono.error(new RuntimeException("Failed to save member"));
+                    return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to save member"));
                 }
             })
             .doOnError(throwable -> log.error("Error: {}", throwable.getMessage()));
@@ -66,7 +66,7 @@ public class MemberService {
             })
             .onErrorResume(throwable -> {
                 log.error("Error: {}", throwable.getMessage());
-                return Flux.error(new RuntimeException("Failed to get all members"));
+                return Flux.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to get all members"));
             });
     }
 
