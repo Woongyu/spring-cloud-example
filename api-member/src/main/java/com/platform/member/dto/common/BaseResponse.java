@@ -12,29 +12,30 @@ import lombok.Setter;
 @Setter
 public class BaseResponse {
 
-  @JsonIgnore private int httpStatus;
+    @JsonIgnore
+    private int httpStatus;
 
-  @JsonProperty("rsp_code")
-  protected String rspCode;
+    @JsonProperty("rsp_code")
+    protected String rspCode;
 
-  @JsonProperty("rsp_msg")
-  protected String rspMsg;
+    @JsonProperty("rsp_msg")
+    protected String rspMsg;
 
-  public BaseResponse() {
-    httpStatus = ErrorType.SUCCESS.getHttpStatus();
-    rspCode = ErrorType.SUCCESS.getCode();
-    rspMsg = ErrorType.SUCCESS.getMessage();
-  }
+    public BaseResponse() {
+        httpStatus = ErrorType.SUCCESS.getHttpStatus();
+        rspCode = ErrorType.SUCCESS.getCode();
+        rspMsg = ErrorType.SUCCESS.getMessage();
+    }
 
-  public BaseResponse(ErrorType errorType) {
-    httpStatus = errorType.getHttpStatus();
-    rspCode = errorType.getCode();
-    rspMsg = errorType.getMessage();
-  }
+    public BaseResponse(ErrorType errorType) {
+        httpStatus = errorType.getHttpStatus();
+        rspCode = errorType.getCode();
+        rspMsg = errorType.getMessage();
+    }
 
-  public void setErrorType(ErrorType errorType) {
-    httpStatus = errorType.getHttpStatus();
-    rspCode = errorType.getCode();
-    rspMsg = errorType.getMessage();
-  }
+    public void setErrorType(ErrorType errorType) {
+        httpStatus = errorType.getHttpStatus();
+        rspCode = errorType.getCode();
+        rspMsg = errorType.getMessage();
+    }
 }
