@@ -1,11 +1,17 @@
 package com.platform.common.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.security.SecureRandom;
+import java.util.Map;
 import java.util.Random;
 
 public final class CommonUtil {
     public static final Random CommonRandom = new SecureRandom();
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    public static final TypeReference<Map<String, Object>> JsonTypeRef =
+        new TypeReference<Map<String, Object>>() {
+        };
 
     public static String generateUserName() {
         final String[] firstName = {"효리", "민수", "길동", "효복", "유지", "예진", "바다", "하늘"};
