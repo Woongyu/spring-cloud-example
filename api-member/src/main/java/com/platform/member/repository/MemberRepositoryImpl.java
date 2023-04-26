@@ -9,17 +9,17 @@ import reactor.core.publisher.Flux;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepository {
 
-    private final Map<Integer, MemberEntity> userMap = new HashMap<>();
+    private final Map<Integer, MemberEntity> userMap = new ConcurrentHashMap<>();
     private final AtomicInteger globalIndex = new AtomicInteger(1);
 
     @PostConstruct
