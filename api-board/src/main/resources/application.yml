@@ -1,0 +1,27 @@
+server:
+  port: 18082
+  error:
+    include-message: always
+
+logging:
+  level:
+    root: info
+
+spring:
+  profiles:
+    default: dev
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    displayRequestDuration: true
+    operations-sorter: alpha
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, beans, conditions
+        exclude: threaddump, heapdump
+    health:
+      show-details: always

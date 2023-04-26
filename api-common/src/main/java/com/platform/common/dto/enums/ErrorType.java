@@ -1,4 +1,4 @@
-package com.platform.member.dto.enums;
+package com.platform.common.dto.enums;
 
 import lombok.Getter;
 

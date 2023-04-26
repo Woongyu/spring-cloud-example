@@ -1,8 +1,8 @@
-package com.platform.member.dto.common;
+package com.platform.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.platform.member.dto.enums.ErrorType;
+import com.platform.common.dto.enums.ErrorType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

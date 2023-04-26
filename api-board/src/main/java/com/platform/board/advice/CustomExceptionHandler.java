@@ -1,4 +1,4 @@
-package com.platform.member.advice;
+package com.platform.board.advice;
 
 import com.platform.common.dto.BaseResponse;
 import com.platform.common.dto.enums.ErrorType;

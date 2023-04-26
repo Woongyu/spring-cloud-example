@@ -1,7 +1,7 @@
 package com.platform.member.service;
 
 import com.platform.member.dto.MemberDetail;
-import com.platform.member.dto.common.BaseResponse;
+import com.platform.common.dto.BaseResponse;
 import com.platform.member.entity.MemberEntity;
 import com.platform.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
