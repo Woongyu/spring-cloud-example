@@ -28,13 +28,13 @@ public class MemberController {
     @Operation(summary = "회원 상세정보 조회")
     @PostMapping(value = "/member/detail")
     @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "202", description = "Accepted"),
-                    @ApiResponse(responseCode = "302", description = "Found"),
-                    @ApiResponse(responseCode = "404", description = "Not found")
-            })
+        value = {
+            @ApiResponse(responseCode = "202", description = "Accepted"),
+            @ApiResponse(responseCode = "302", description = "Found"),
+            @ApiResponse(responseCode = "404", description = "Not found")
+        })
     public ResponseEntity<MemberDetail.Response> memberDetail(
-            @RequestBody @Valid MemberDetail.Request request) {
+        @RequestBody @Valid MemberDetail.Request request) {
         log.info("Detail request [{}]", request.toString());
 
         HttpStatus status = HttpStatus.OK;
@@ -43,6 +43,6 @@ public class MemberController {
         response.setUserName("GilDong Hong");
 
         return ResponseEntity.status(status)
-                .body(response);
+            .body(response);
     }
 }
