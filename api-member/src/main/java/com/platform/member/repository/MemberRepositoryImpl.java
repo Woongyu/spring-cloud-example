@@ -48,9 +48,10 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Integer save(MemberEntity entity) {
-        entity.setUserId(globalIndex.get());
+        int userId = globalIndex.get();
+        entity.setUserId(userId);
         userMap.put(globalIndex.getAndIncrement(), entity);
-        return globalIndex.get();
+        return userId;
     }
 
     @Override
