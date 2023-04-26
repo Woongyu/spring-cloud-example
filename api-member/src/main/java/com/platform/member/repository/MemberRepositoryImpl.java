@@ -1,7 +1,7 @@
 package com.platform.member.repository;
 
 import com.platform.member.entity.MemberEntity;
-import com.platform.member.util.CommonUtil;
+import com.platform.common.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -24,12 +24,12 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @PostConstruct
     private void init() {
-        makeUserMap();
+        createUserMap();
     }
 
-    private void makeUserMap() {
-        final int max = 20;
-        while (globalIndex.get() <= max) {
+    private void createUserMap() {
+        final int maxIndex = 20;
+        while (globalIndex.get() <= maxIndex) {
             MemberEntity entity = MemberEntity.builder()
                 .userId(globalIndex.get())
                 .userName(CommonUtil.generateUserName())
