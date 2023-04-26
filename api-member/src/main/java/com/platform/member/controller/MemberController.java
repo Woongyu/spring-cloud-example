@@ -23,10 +23,10 @@ import javax.validation.Valid;
 @RequestMapping("v1")
 @RestController
 @RequiredArgsConstructor
-public class MamberController {
+public class MemberController {
 
-    @Operation(summary = "회원 추가정보 조회")
-    @PostMapping(value = "/user-detail")
+    @Operation(summary = "회원 상세정보 조회")
+    @PostMapping(value = "/member/detail")
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "202", description = "Accepted"),
