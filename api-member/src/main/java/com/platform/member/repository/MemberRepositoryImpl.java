@@ -9,12 +9,14 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepository {
 
     private final Map<Integer, MemberEntity> userMap = new HashMap<>();
+    private final AtomicInteger globalIndex = new AtomicInteger(1);
 
     @PostConstruct
     private void init() {
@@ -22,22 +24,27 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     private void makeUserMap() {
-        int index = 1;
         final int max = 20;
-        while (index <= max) {
+        while (globalIndex.get() <= max) {
             MemberEntity entity = MemberEntity.builder()
-                .userId(index)
+                .userId(globalIndex.get())
                 .userName(CommonUtil.generateUserName())
                 .userAge(CommonUtil.CommonRandom.nextInt(60))
                 .country(CommonUtil.generateCountry())
                 .build();
 
-            userMap.put(index++, entity);
+            userMap.put(globalIndex.getAndIncrement(), entity);
         }
     }
 
     @Override
     public Optional<MemberEntity> findByUserId(Integer userId) {
         return Optional.ofNullable(userMap.get(userId));
+    }
+
+    @Override
+    public Integer save(MemberEntity entity) {
+        userMap.put(globalIndex.getAndIncrement(), entity);
+        return globalIndex.get();
     }
 }

@@ -1,6 +1,8 @@
 package com.platform.member.service;
 
 import com.platform.member.dto.MemberDetail;
+import com.platform.member.dto.common.BaseResponse;
+import com.platform.member.entity.MemberEntity;
 import com.platform.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,5 +27,22 @@ public class MemberService {
                 return response;
             })
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NO DATA")));
+    }
+
+    public Mono<BaseResponse> createMember(MemberDetail.Request request) {
+
+        MemberEntity entity = new MemberEntity();
+        BeanUtils.copyProperties(request, entity);
+
+        return Mono.fromSupplier(() -> memberRepository.save(entity))
+            .flatMap(result -> {
+                if (result > 0) {
+                    BaseResponse response = new BaseResponse();
+                    return Mono.just(response);
+                } else {
+                    return Mono.error(new RuntimeException("Failed to save member"));
+                }
+            })
+            .doOnError(throwable -> log.error("Error: {}", throwable.getMessage()));
     }
 }

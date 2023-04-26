@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.platform.member.dto.common.BaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -16,13 +15,25 @@ public class MemberDetail {
 
     @Schema(name = "DetailRequest")
     @Getter
+    @Setter
     @ToString
-    @NoArgsConstructor
     public static class Request {
 
+        private static final String DEFAULT_COUNTRY = "South Korea";
+
         @NotNull
-        @JsonProperty("user_id")
-        private Integer userId;
+        @JsonProperty("user_name")
+        private String userName;
+
+        @JsonProperty("user_age")
+        private Integer userAge;
+
+        @JsonProperty("country")
+        private String country;
+
+        public Request() {
+            this.country = DEFAULT_COUNTRY;
+        }
     }
 
     @Schema(name = "DetailResponse")
