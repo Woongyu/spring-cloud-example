@@ -1,23 +1,25 @@
 package com.platform.member.service;
 
-import com.platform.member.dto.MemberDetail;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.platform.common.dto.BaseResponse;
+import com.platform.common.dto.enums.ErrorType;
+import com.platform.common.exception.APIException;
+import com.platform.member.dto.MemberDetail;
 import com.platform.member.dto.PostResponse;
+import com.platform.member.dto.UserActivityResponse;
 import com.platform.member.entity.MemberEntity;
 import com.platform.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -26,6 +28,8 @@ public class MemberService {
 
     private final WebClient webClient;
     private final MemberRepository memberRepository;
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Value("${location.target-url.board}")
     private String boardUrl;
@@ -70,19 +74,39 @@ public class MemberService {
             });
     }
 
-    public Mono<List<PostResponse>> getBoardPosts(int userId) {
-        final String apiPath = "/api/board/posts";
-
-        return webClient.mutate()
+    public Mono<UserActivityResponse> getUserActivity(int userId) {
+        Mono<PostResponse> postResponse = webClient.mutate()
             .baseUrl(boardUrl)
             .build()
             .get()
             .uri(uriBuilder -> uriBuilder
-                .path(apiPath)
+                .path("/api/board/posts")
                 .queryParam("user_id", userId)
                 .build())
             .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<>() {
+            .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new APIException(ErrorType.NO_DATA)))
+            .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new APIException(ErrorType.API_ERROR)))
+            .bodyToMono(PostResponse.class)
+            .onErrorResume(throwable -> {
+                if (throwable instanceof WebClientResponseException) {
+                    WebClientResponseException e = (WebClientResponseException) throwable;
+                    if (e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
+                        return Mono.error(new APIException(ErrorType.SERVER_ERROR));
+                    }
+                } else if (throwable instanceof APIException) {
+                    return Mono.error(new APIException(ErrorType.NO_DATA));
+                }
+
+                return Mono.error(new RuntimeException(throwable.getMessage()));
             });
+
+        return postResponse.flatMap(post -> {
+            UserActivityResponse userActivityResponse = new UserActivityResponse();
+            userActivityResponse.setUserId(userId);
+            memberRepository.findByUserId(userId)
+                .ifPresent(entity -> userActivityResponse.setUserName(entity.getUserName()));
+            userActivityResponse.setPosts(post);
+            return Mono.just(userActivityResponse);
+        });
     }
 }
