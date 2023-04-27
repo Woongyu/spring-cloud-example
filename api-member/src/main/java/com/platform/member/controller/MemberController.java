@@ -4,6 +4,7 @@ import com.platform.common.dto.BaseResponse;
 import com.platform.member.dto.MemberDetail;
 import com.platform.member.dto.PostResponse;
 import com.platform.member.dto.MemberActivityResponse;
+import com.platform.member.dto.TotalPost;
 import com.platform.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -64,10 +65,19 @@ public class MemberController {
         return memberService.geMemberActivity(userId);
     }
 
+    @Operation(summary = "멤버별 모든 게시물 조회",
+        description = "모든 유저에 대한 게시물 전체를 조회합니다.")
+    @GetMapping("/members/posts")
+    public Flux<PostResponse> getPostList() {
+        log.info("Get all posts from all members");
+        return memberService.getAllPosts();
+    }
+
     @Operation(summary = "멤버별 최고 인기 게시물 조회",
         description = "모든 유저에 대한 가장 좋아요를 많이 받은 최고의 게시물을 조회합니다.")
-    @GetMapping("/members/best-post")
-    public Flux<PostResponse> getBestPostByMember() {
+    @GetMapping("/members/posts/best")
+    public Mono<TotalPost> getBestPostByMember() {
+        log.info("Get best posts from all members");
         return memberService.getBestPostByMember();
     }
 }

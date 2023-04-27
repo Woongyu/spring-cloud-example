@@ -3,52 +3,42 @@ package com.platform.member.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.platform.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
-@Schema(name = "PostResponse")
+@Schema(name = "TotalPost")
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostResponse extends BaseResponse {
+public class TotalPost {
 
-    @JsonProperty("user_id")
+    @JsonProperty("total_post_cnt")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Integer userId;
+    private Integer totalPostCnt;
 
-    @JsonProperty("post_cnt")
-    private String postCnt;
-
-    @JsonProperty("post_list")
-    private List<PostInfo> postList;
-
-    public PostResponse(Integer userId, String rspCode, String rspMsg) {
-        this.userId = userId;
-        this.rspCode = rspCode;
-        this.rspMsg = rspMsg;
-    }
+    @JsonProperty("total_list")
+    private List<PostSummary> totalList;
 
     @Getter
     @Setter
-    @NoArgsConstructor
+    @Builder
+    @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class PostInfo {
+    public static class PostSummary {
 
-        @JsonProperty("post_id")
+        @JsonProperty("user_id")
         @JsonFormat(shape = JsonFormat.Shape.STRING)
-        private Integer postId;
+        private Integer userId;
 
         @JsonProperty("title")
         private String title;
-
-        @JsonProperty("content")
-        private String content;
 
         @JsonProperty("likes_count")
         @JsonFormat(shape = JsonFormat.Shape.STRING)
