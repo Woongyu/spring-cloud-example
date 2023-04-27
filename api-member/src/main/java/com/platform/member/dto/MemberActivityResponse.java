@@ -10,13 +10,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Schema(name = "UserActivityResponse")
+@Schema(name = "MemberActivityResponse")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserActivityResponse extends BaseResponse {
+public class MemberActivityResponse extends BaseResponse {
 
     @JsonProperty("user_id")
     @JsonFormat(shape = JsonFormat.Shape.STRING)

@@ -9,7 +9,7 @@ import com.platform.common.exception.APIException;
 import com.platform.common.util.CommonUtil;
 import com.platform.member.dto.MemberDetail;
 import com.platform.member.dto.PostResponse;
-import com.platform.member.dto.UserActivityResponse;
+import com.platform.member.dto.MemberActivityResponse;
 import com.platform.member.entity.MemberEntity;
 import com.platform.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -83,7 +83,7 @@ public class MemberService {
             });
     }
 
-    public Mono<UserActivityResponse> getUserActivity(int userId) {
+    public Mono<MemberActivityResponse> geMemberActivity(int userId) {
         Mono<PostResponse> postResponse = webClient.mutate()
             .baseUrl(boardUrl)
             .build()
@@ -97,8 +97,7 @@ public class MemberService {
             .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new APIException(ErrorType.API_ERROR)))
             .bodyToMono(PostResponse.class)
             .onErrorResume(throwable -> {
-                if (throwable instanceof WebClientResponseException) {
-                    WebClientResponseException e = (WebClientResponseException) throwable;
+                if (throwable instanceof WebClientResponseException e) {
                     if (e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
                         return Mono.error(new APIException(ErrorType.SERVER_ERROR));
                     }
@@ -110,12 +109,12 @@ public class MemberService {
             });
 
         return postResponse.flatMap(post -> {
-            UserActivityResponse userActivityResponse = new UserActivityResponse();
-            userActivityResponse.setUserId(userId);
+            MemberActivityResponse memberActivityResponse = new MemberActivityResponse();
+            memberActivityResponse.setUserId(userId);
             memberRepository.findByUserId(userId)
-                .ifPresent(entity -> userActivityResponse.setUserName(entity.getUserName()));
-            userActivityResponse.setPosts(post);
-            return Mono.just(userActivityResponse);
+                .ifPresent(entity -> memberActivityResponse.setUserName(entity.getUserName()));
+            memberActivityResponse.setPosts(post);
+            return Mono.just(memberActivityResponse);
         });
     }
 
