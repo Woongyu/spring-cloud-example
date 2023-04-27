@@ -26,7 +26,6 @@ public class BoardController {
     @GetMapping("/api/board/posts")
     public ResponseEntity<Post> getPostsByUserId(@RequestParam("user_id") int userId) {
         log.info("Posts userId [{}]", userId);
-
         return Optional.ofNullable(boardService.getPostsByUserId(userId))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());

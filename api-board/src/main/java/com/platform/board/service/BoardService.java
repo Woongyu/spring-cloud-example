@@ -26,14 +26,15 @@ public class BoardService {
 
     private void createPost() {
         final int maxUserId = 20;
+        int postId = Constant.ONE;
         for (int userId = Constant.ONE; userId <= maxUserId; userId++) {
             List<Post.PostInfo> postInfos = new ArrayList<>();
-            for (int postId = Constant.ONE; postId < CommonUtil.CommonRandom.nextInt(30) + 1; postId++) {
+            for (int localId = Constant.ONE; localId < CommonUtil.CommonRandom.nextInt(50) + 1; localId++, postId++) {
                 Post.PostInfo postInfo = Post.PostInfo.builder()
                     .postId(postId)
                     .title(CommonUtil.generateTitle())
                     .content(CommonUtil.generateContent())
-                    .likesCount(CommonUtil.CommonRandom.nextInt(100))
+                    .likesCount(CommonUtil.CommonRandom.nextInt(150))
                     .build();
 
                 postInfos.add(postInfo);
