@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Repository
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepository {
-
     private final Map<Integer, MemberEntity> userMap = new ConcurrentHashMap<>();
     private final AtomicInteger globalIndex = new AtomicInteger(Constant.ONE);
 
@@ -57,7 +56,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Flux<MemberEntity> findAll() {
-        // 무작위로 섞어서 반환
+        // Return shuffled result
         List<MemberEntity> shuffledValues = new ArrayList<>(userMap.values());
         Collections.shuffle(shuffledValues);
         return Flux.fromIterable(shuffledValues);

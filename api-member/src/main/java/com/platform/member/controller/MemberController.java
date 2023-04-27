@@ -3,7 +3,8 @@ package com.platform.member.controller;
 import com.platform.common.dto.BaseResponse;
 import com.platform.member.dto.MemberDetail;
 import com.platform.member.dto.PostResponse;
-import com.platform.member.dto.UserActivityResponse;
+import com.platform.member.dto.MemberActivityResponse;
+import com.platform.member.dto.TotalPost;
 import com.platform.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +38,6 @@ public class MemberController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<MemberDetail.Response> getMemberDetail(@PathVariable(name = "userId") Integer userId) {
         log.info("Detail userId [{}]", userId);
-
         return memberService.getMemberById(userId);
     }
 
@@ -47,7 +47,6 @@ public class MemberController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<BaseResponse> createMember(@RequestBody @Valid MemberDetail.Request request) {
         log.info("Create request [{}]", request.toString());
-
         return memberService.createMember(request);
     }
 
@@ -56,20 +55,29 @@ public class MemberController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public Flux<MemberDetail.Response> getMemberList() {
         log.info("Get all members");
-
         return memberService.getAllMembers();
     }
 
-    @Operation(summary = "유저 활동 현황 조회", description = "특정 유저의 활동 현황을 조회합니다.")
+    @Operation(summary = "회원 활동 현황 조회", description = "특정 회원의 활동 현황을 조회합니다.")
     @GetMapping("/member/activity")
-    public Mono<UserActivityResponse> getUserActivity(@RequestParam("user_id") int userId) {
-        return memberService.getUserActivity(userId);
+    public Mono<MemberActivityResponse> geMemberActivity(@RequestParam("user_id") int userId) {
+        log.info("Activity userId [{}]", userId);
+        return memberService.geMemberActivity(userId);
+    }
+
+    @Operation(summary = "멤버별 모든 게시물 조회",
+        description = "모든 유저에 대한 게시물 전체를 조회합니다.")
+    @GetMapping("/members/posts")
+    public Flux<PostResponse> getPostList() {
+        log.info("Get all posts from all members");
+        return memberService.getAllPosts();
     }
 
     @Operation(summary = "멤버별 최고 인기 게시물 조회",
         description = "모든 유저에 대한 가장 좋아요를 많이 받은 최고의 게시물을 조회합니다.")
-    @GetMapping("/members/best-post")
-    public Flux<PostResponse> getBestPostByMember() {
+    @GetMapping("/members/posts/best")
+    public Mono<TotalPost> getBestPostByMember() {
+        log.info("Get best posts from all members");
         return memberService.getBestPostByMember();
     }
 }

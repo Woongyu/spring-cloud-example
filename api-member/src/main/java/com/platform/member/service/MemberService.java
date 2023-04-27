@@ -7,13 +7,15 @@ import com.platform.common.dto.BaseResponse;
 import com.platform.common.dto.enums.ErrorType;
 import com.platform.common.exception.APIException;
 import com.platform.common.util.CommonUtil;
+import com.platform.member.dto.MemberActivityResponse;
 import com.platform.member.dto.MemberDetail;
 import com.platform.member.dto.PostResponse;
-import com.platform.member.dto.UserActivityResponse;
+import com.platform.member.dto.TotalPost;
 import com.platform.member.entity.MemberEntity;
 import com.platform.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,11 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.ParallelFlux;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -51,7 +57,7 @@ public class MemberService {
                 BeanUtils.copyProperties(memberEntity, response);
                 return response;
             })
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NO DATA")));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No data")));
     }
 
     public Mono<BaseResponse> createMember(MemberDetail.Request request) {
@@ -83,7 +89,7 @@ public class MemberService {
             });
     }
 
-    public Mono<UserActivityResponse> getUserActivity(int userId) {
+    public Mono<MemberActivityResponse> geMemberActivity(int userId) {
         Mono<PostResponse> postResponse = webClient.mutate()
             .baseUrl(boardUrl)
             .build()
@@ -97,8 +103,7 @@ public class MemberService {
             .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new APIException(ErrorType.API_ERROR)))
             .bodyToMono(PostResponse.class)
             .onErrorResume(throwable -> {
-                if (throwable instanceof WebClientResponseException) {
-                    WebClientResponseException e = (WebClientResponseException) throwable;
+                if (throwable instanceof WebClientResponseException e) {
                     if (e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
                         return Mono.error(new APIException(ErrorType.SERVER_ERROR));
                     }
@@ -110,16 +115,16 @@ public class MemberService {
             });
 
         return postResponse.flatMap(post -> {
-            UserActivityResponse userActivityResponse = new UserActivityResponse();
-            userActivityResponse.setUserId(userId);
+            MemberActivityResponse memberActivityResponse = new MemberActivityResponse();
+            memberActivityResponse.setUserId(userId);
             memberRepository.findByUserId(userId)
-                .ifPresent(entity -> userActivityResponse.setUserName(entity.getUserName()));
-            userActivityResponse.setPosts(post);
-            return Mono.just(userActivityResponse);
+                .ifPresent(entity -> memberActivityResponse.setUserName(entity.getUserName()));
+            memberActivityResponse.setPosts(post);
+            return Mono.just(memberActivityResponse);
         });
     }
 
-    public Flux<PostResponse> getBestPostByMember() {
+    public Flux<PostResponse> getAllPosts() {
         ParallelFlux<PostResponse> parallelFlux = Flux.range(Constant.ONE, memberRepository.findMaxUserId())
             .parallel(defaultPoolSize)
             .runOn(Schedulers.parallel())
@@ -133,12 +138,12 @@ public class MemberService {
                     .build())
                 .retrieve()
                 .bodyToFlux(PostResponse.class)
-                .onErrorResume(WebClientResponseException.class, this::getRspCodeAndMsg));
+                .onErrorResume(e -> getRspCodeAndMsg((WebClientResponseException) e, userId)));
 
         return parallelFlux.sequential();
     }
 
-    private Mono<PostResponse> getRspCodeAndMsg(WebClientResponseException e) {
+    private Mono<PostResponse> getRspCodeAndMsg(WebClientResponseException e, Integer userId) {
         ErrorType errorType = e.getStatusCode() == HttpStatus.NOT_FOUND
             ? ErrorType.NO_DATA
             : ErrorType.findByErrorType(e.getStatusCode().value());
@@ -159,6 +164,47 @@ public class MemberService {
             log.warn("Http error with no json body");
         }
 
-        return Mono.just(new PostResponse(rspCode, rspMsg));
+        return Mono.just(new PostResponse(userId, rspCode, rspMsg));
+    }
+
+    public Mono<TotalPost> getBestPostByMember() {
+        return this.getAllPosts().collectList()
+            .flatMap(postResponses -> {
+                TotalPost response = new TotalPost();
+                List<TotalPost.PostSummary> postSummaries = new ArrayList<>();
+                for (PostResponse postResponse : postResponses) {
+                    List<PostResponse.PostInfo> postInfoList = postResponse.getPostList();
+                    int postIndex = -1;
+                    if (!ObjectUtils.isEmpty(postInfoList)) {
+                        postIndex = IntStream.range(0, postInfoList.size())
+                            .reduce((i, j) -> postInfoList.get(i).getLikesCount() > postInfoList.get(j).getLikesCount() ? i : j)
+                            .orElse(-1);
+                    }
+
+                    TotalPost.PostSummary postSummary;
+                    if (postIndex >= 0) {
+                        postSummary = TotalPost.PostSummary.builder()
+                            .userId(postResponse.getUserId())
+                            .title(postInfoList.get(postIndex).getTitle())
+                            .likesCount(postInfoList.get(postIndex).getLikesCount())
+                            .build();
+                    } else {
+                        postSummary = TotalPost.PostSummary.builder()
+                            .userId(postResponse.getUserId())
+                            .title("No data")
+                            .likesCount(Constant.ZERO)
+                            .build();
+                    }
+
+                    postSummaries.add(postSummary);
+                }
+
+                // Sorted in reverse order of likes count
+                postSummaries.sort(Comparator.comparingInt(TotalPost.PostSummary::getLikesCount).reversed());
+                response.setTotalPostCnt(postSummaries.size());
+                response.setTotalList(postSummaries);
+
+                return Mono.just(response);
+            });
     }
 }
