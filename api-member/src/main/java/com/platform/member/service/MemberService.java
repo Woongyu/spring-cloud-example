@@ -181,22 +181,7 @@ public class MemberService {
                             .orElse(Constant.MINUS_ONE);
                     }
 
-                    TotalPost.PostSummary postSummary;
-                    if (postIndex >= 0) {
-                        postSummary = TotalPost.PostSummary.builder()
-                            .userId(postResponse.getUserId())
-                            .title(postInfoList.get(postIndex).getTitle())
-                            .likesCount(postInfoList.get(postIndex).getLikesCount())
-                            .build();
-                    } else {
-                        postSummary = TotalPost.PostSummary.builder()
-                            .userId(postResponse.getUserId())
-                            .title("No data")
-                            .likesCount(Constant.ZERO)
-                            .build();
-                    }
-
-                    postSummaries.add(postSummary);
+                    postSummaries.add(buildPostSummary(postIndex, postResponse.getUserId(), postInfoList));
                 }
 
                 // Sorted in reverse order of likes count
@@ -206,5 +191,24 @@ public class MemberService {
 
                 return Mono.just(response);
             });
+    }
+
+    private TotalPost.PostSummary buildPostSummary(int postIndex, Integer userId, List<PostResponse.PostInfo> postInfoList) {
+        TotalPost.PostSummary postSummary;
+        if (postIndex >= 0 && postIndex < postInfoList.size()) {
+            postSummary = TotalPost.PostSummary.builder()
+                .userId(userId)
+                .title(postInfoList.get(postIndex).getTitle())
+                .likesCount(postInfoList.get(postIndex).getLikesCount())
+                .build();
+        } else {
+            postSummary = TotalPost.PostSummary.builder()
+                .userId(userId)
+                .title("No data")
+                .likesCount(Constant.ZERO)
+                .build();
+        }
+
+        return postSummary;
     }
 }
