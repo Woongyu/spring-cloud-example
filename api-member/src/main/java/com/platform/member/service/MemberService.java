@@ -97,6 +97,7 @@ public class MemberService {
             .uri(uriBuilder -> uriBuilder
                 .path("/api/board/posts")
                 .queryParam(Constant.USER_ID, userId)
+                .queryParam(Constant.LIMIT, Constant.ZERO)
                 .build())
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new APIException(ErrorType.NO_DATA)))
@@ -135,6 +136,7 @@ public class MemberService {
                 .uri(uriBuilder -> uriBuilder
                     .path("/api/board/posts")
                     .queryParam(Constant.USER_ID, userId)
+                    .queryParam(Constant.LIMIT, Constant.ZERO)
                     .build())
                 .retrieve()
                 .bodyToFlux(PostResponse.class)
