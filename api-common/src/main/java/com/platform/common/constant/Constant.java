@@ -11,6 +11,8 @@ public class Constant {
     public static final String RSP_CODE = "rsp_code";
     public static final String RSP_MSG = "rsp_msg";
     public static final String USER_ID = "user_id";
+    public static final String NEXT_PAGE = "next_page";
+    public static final String LIMIT = "limit";
     public static final String USE_Y = "Y";
     public static final String USE_N = "N";
 

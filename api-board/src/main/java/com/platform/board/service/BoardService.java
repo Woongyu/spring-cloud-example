@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
@@ -50,10 +52,31 @@ public class BoardService {
         }
     }
 
-    public Post getPostsByUserId(int userId) {
+    public Post getPostsByUserId(int userId, String nextPage, Integer limit) {
+        if (limit > 0) {
+            List<Post> filteredPosts = postList.stream()
+                .filter(post -> post.getUserId() == userId)
+                .toList();
+
+            return filteredPosts.stream()
+                .findFirst()
+                .map(post -> {
+                    List<Post.PostInfo> localList = Optional.ofNullable(post.getPostList())
+                        .map(list -> CommonUtil.pageOf(list, nextPage, limit))
+                        .orElse(Collections.emptyList());
+
+                    return Post.builder()
+                        .userId(userId)
+                        .postCnt(localList.size())
+                        .postList(localList)
+                        .build();
+                })
+                .orElse(null);
+        }
+
         return postList.stream()
             .filter(post -> post.getUserId() == userId)
-            .findFirst()
+            .findAny()
             .orElse(null);
     }
 }
