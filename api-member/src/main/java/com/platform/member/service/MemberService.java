@@ -96,7 +96,8 @@ public class MemberService {
             .get()
             .uri(uriBuilder -> uriBuilder
                 .path("/api/board/posts")
-                .queryParam("user_id", userId)
+                .queryParam(Constant.USER_ID, userId)
+                .queryParam(Constant.LIMIT, Constant.ZERO)
                 .build())
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new APIException(ErrorType.NO_DATA)))
@@ -134,7 +135,8 @@ public class MemberService {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                     .path("/api/board/posts")
-                    .queryParam("user_id", userId)
+                    .queryParam(Constant.USER_ID, userId)
+                    .queryParam(Constant.LIMIT, Constant.ZERO)
                     .build())
                 .retrieve()
                 .bodyToFlux(PostResponse.class)
@@ -174,29 +176,14 @@ public class MemberService {
                 List<TotalPost.PostSummary> postSummaries = new ArrayList<>();
                 for (PostResponse postResponse : postResponses) {
                     List<PostResponse.PostInfo> postInfoList = postResponse.getPostList();
-                    int postIndex = -1;
+                    int postIndex = Constant.MINUS_ONE;
                     if (!ObjectUtils.isEmpty(postInfoList)) {
                         postIndex = IntStream.range(0, postInfoList.size())
                             .reduce((i, j) -> postInfoList.get(i).getLikesCount() > postInfoList.get(j).getLikesCount() ? i : j)
-                            .orElse(-1);
+                            .orElse(Constant.MINUS_ONE);
                     }
 
-                    TotalPost.PostSummary postSummary;
-                    if (postIndex >= 0) {
-                        postSummary = TotalPost.PostSummary.builder()
-                            .userId(postResponse.getUserId())
-                            .title(postInfoList.get(postIndex).getTitle())
-                            .likesCount(postInfoList.get(postIndex).getLikesCount())
-                            .build();
-                    } else {
-                        postSummary = TotalPost.PostSummary.builder()
-                            .userId(postResponse.getUserId())
-                            .title("No data")
-                            .likesCount(Constant.ZERO)
-                            .build();
-                    }
-
-                    postSummaries.add(postSummary);
+                    postSummaries.add(buildPostSummary(postIndex, postResponse.getUserId(), postInfoList));
                 }
 
                 // Sorted in reverse order of likes count
@@ -206,5 +193,24 @@ public class MemberService {
 
                 return Mono.just(response);
             });
+    }
+
+    private TotalPost.PostSummary buildPostSummary(int postIndex, Integer userId, List<PostResponse.PostInfo> postInfoList) {
+        TotalPost.PostSummary postSummary;
+        if (postIndex >= 0 && postIndex < postInfoList.size()) {
+            postSummary = TotalPost.PostSummary.builder()
+                .userId(userId)
+                .title(postInfoList.get(postIndex).getTitle())
+                .likesCount(postInfoList.get(postIndex).getLikesCount())
+                .build();
+        } else {
+            postSummary = TotalPost.PostSummary.builder()
+                .userId(userId)
+                .title("No data")
+                .likesCount(Constant.ZERO)
+                .build();
+        }
+
+        return postSummary;
     }
 }

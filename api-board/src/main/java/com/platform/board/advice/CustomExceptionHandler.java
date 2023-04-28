@@ -28,7 +28,6 @@ public class CustomExceptionHandler {
         e.getBindingResult()
             .getAllErrors()
             .forEach(error -> errors.put(((FieldError) error).getField(), error.getDefaultMessage()));
-
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -38,7 +37,6 @@ public class CustomExceptionHandler {
 
         HttpStatus status = e.getStatus();
         BaseResponse response = new BaseResponse(ErrorType.findByErrorType(status.value()));
-
         return ResponseEntity.status(status)
             .body(response);
     }

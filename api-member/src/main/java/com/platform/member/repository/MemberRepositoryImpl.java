@@ -68,6 +68,6 @@ public class MemberRepositoryImpl implements MemberRepository {
             .stream()
             .mapToInt(Integer::intValue)
             .max()
-            .orElse(Constant.ZERO);
+            .orElse(Constant.ZERO); // Concern about occurrence of IllegalArgumentException
     }
 }

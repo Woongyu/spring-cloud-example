@@ -18,16 +18,18 @@ public class MemberDetail {
     @Setter
     @ToString
     public static class Request {
-
         private static final String DEFAULT_COUNTRY = "South Korea";
 
         @NotNull
+        @Schema(description = "User Name", defaultValue = "Matthew", nullable = false)
         @JsonProperty("user_name")
         private String userName;
 
+        @Schema(description = "User Age", defaultValue = "20")
         @JsonProperty("user_age")
         private Integer userAge;
 
+        @Schema(description = "Country", defaultValue = "South Korea")
         @JsonProperty("country")
         private String country;
 

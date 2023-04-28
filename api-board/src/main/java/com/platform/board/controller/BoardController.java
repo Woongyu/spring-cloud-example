@@ -2,6 +2,7 @@ package com.platform.board.controller;
 
 import com.platform.board.dto.Post;
 import com.platform.board.service.BoardService;
+import com.platform.common.constant.Constant;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @Tag(name = "게시판 정보", description = "Board API")
@@ -24,9 +26,11 @@ public class BoardController {
 
     @Operation(summary = "유저별 게시물 조회", description = "유저별 게시물을 조회합니다.")
     @GetMapping("/api/board/posts")
-    public ResponseEntity<Post> getPostsByUserId(@RequestParam("user_id") int userId) {
+    public ResponseEntity<Post> getPostsByUserId(@RequestParam(name = Constant.USER_ID, defaultValue = "1") int userId,
+                                                 @RequestParam(name = Constant.NEXT_PAGE, required = false) String nextPage,
+                                                 @RequestParam(name = Constant.LIMIT, defaultValue = "0") @NotNull Integer limit) {
         log.info("Posts userId [{}]", userId);
-        return Optional.ofNullable(boardService.getPostsByUserId(userId))
+        return Optional.ofNullable(boardService.getPostsByUserId(userId, nextPage, limit))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
