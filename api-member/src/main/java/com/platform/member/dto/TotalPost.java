@@ -3,6 +3,7 @@ package com.platform.member.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.platform.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TotalPost {
+public class TotalPost extends BaseResponse {
 
     @JsonProperty("total_post_cnt")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
