@@ -96,7 +96,7 @@ public class MemberService {
             .get()
             .uri(uriBuilder -> uriBuilder
                 .path("/api/board/posts")
-                .queryParam("user_id", userId)
+                .queryParam(Constant.USER_ID, userId)
                 .build())
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new APIException(ErrorType.NO_DATA)))
@@ -134,7 +134,7 @@ public class MemberService {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                     .path("/api/board/posts")
-                    .queryParam("user_id", userId)
+                    .queryParam(Constant.USER_ID, userId)
                     .build())
                 .retrieve()
                 .bodyToFlux(PostResponse.class)
@@ -174,11 +174,11 @@ public class MemberService {
                 List<TotalPost.PostSummary> postSummaries = new ArrayList<>();
                 for (PostResponse postResponse : postResponses) {
                     List<PostResponse.PostInfo> postInfoList = postResponse.getPostList();
-                    int postIndex = -1;
+                    int postIndex = Constant.MINUS_ONE;
                     if (!ObjectUtils.isEmpty(postInfoList)) {
                         postIndex = IntStream.range(0, postInfoList.size())
                             .reduce((i, j) -> postInfoList.get(i).getLikesCount() > postInfoList.get(j).getLikesCount() ? i : j)
-                            .orElse(-1);
+                            .orElse(Constant.MINUS_ONE);
                     }
 
                     TotalPost.PostSummary postSummary;

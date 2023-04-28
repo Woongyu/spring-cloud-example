@@ -2,6 +2,7 @@ package com.platform.board.controller;
 
 import com.platform.board.dto.Post;
 import com.platform.board.service.BoardService;
+import com.platform.common.constant.Constant;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class BoardController {
 
     @Operation(summary = "유저별 게시물 조회", description = "유저별 게시물을 조회합니다.")
     @GetMapping("/api/board/posts")
-    public ResponseEntity<Post> getPostsByUserId(@RequestParam("user_id") int userId) {
+    public ResponseEntity<Post> getPostsByUserId(@RequestParam(Constant.USER_ID) int userId) {
         log.info("Posts userId [{}]", userId);
         return Optional.ofNullable(boardService.getPostsByUserId(userId))
             .map(ResponseEntity::ok)

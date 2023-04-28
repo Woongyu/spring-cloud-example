@@ -1,5 +1,6 @@
 package com.platform.member.controller;
 
+import com.platform.common.constant.Constant;
 import com.platform.common.dto.BaseResponse;
 import com.platform.member.dto.MemberDetail;
 import com.platform.member.dto.PostResponse;
@@ -60,7 +61,7 @@ public class MemberController {
 
     @Operation(summary = "회원 활동 현황 조회", description = "특정 회원의 활동 현황을 조회합니다.")
     @GetMapping("/member/activity")
-    public Mono<MemberActivityResponse> geMemberActivity(@RequestParam("user_id") int userId) {
+    public Mono<MemberActivityResponse> geMemberActivity(@RequestParam(Constant.USER_ID) int userId) {
         log.info("Activity userId [{}]", userId);
         return memberService.geMemberActivity(userId);
     }
