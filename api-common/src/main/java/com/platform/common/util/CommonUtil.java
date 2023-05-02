@@ -46,13 +46,13 @@ public final class CommonUtil {
         return sb.toString();
     }
 
-    public static <T> List<T> pageOf(List<T> items, String nextPage, Integer limit) {
+    public static <T> List<T> pageOf(String page, Integer limit, List<T> sort) {
         int nextPageNum = 1;
-        if (StringUtils.isNotBlank(nextPage)) {
-            nextPageNum = Math.max(nextPageNum, Integer.parseInt(nextPage));
+        if (StringUtils.isNotBlank(page)) {
+            nextPageNum = Math.max(nextPageNum, Integer.parseInt(page));
         }
 
-        int totalItemCount = items.size();
+        int totalItemCount = sort.size();
 
         int itemsPerPage = limit;
         int totalPages = (int) Math.ceil((double) totalItemCount / itemsPerPage);
@@ -60,12 +60,12 @@ public final class CommonUtil {
         int startIndex = (nextPageNum - 1) * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, totalItemCount);
 
-        List<T> localItems = new ArrayList<>();
+        List<T> items = new ArrayList<>();
         for (int i = startIndex; i < endIndex; i++) {
-            localItems.add(items.get(i));
+            items.add(sort.get(i));
         }
 
-        return localItems;
+        return items;
     }
 
     private CommonUtil() {
