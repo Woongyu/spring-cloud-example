@@ -35,6 +35,7 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .userName(CommonUtil.generateUserName())
                 .userAge(CommonUtil.CommonRandom.nextInt(60))
                 .country(CommonUtil.generateCountry())
+                .useYn(Constant.USE_Y)
                 .build();
 
             userMap.put(globalIndex.getAndIncrement(), entity);
