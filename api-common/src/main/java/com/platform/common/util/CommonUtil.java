@@ -1,6 +1,7 @@
 package com.platform.common.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.platform.common.dto.enums.Title;
 import org.apache.commons.lang3.StringUtils;
 
 import java.security.SecureRandom;
@@ -12,6 +13,7 @@ import java.util.Random;
 public final class CommonUtil {
     public static final Random CommonRandom = new SecureRandom();
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
     public static final TypeReference<Map<String, Object>> JsonTypeRef =
         new TypeReference<>() {
         };
@@ -29,9 +31,15 @@ public final class CommonUtil {
 
     public static String generateTitle() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 5; i++) {
-            int index = CommonRandom.nextInt(ALPHABET.length());
-            sb.append(ALPHABET.charAt(index));
+        Title[] titles = Title.values();
+        int numWords = CommonRandom.nextInt(1, 4);
+        for (int i = 0; i < numWords; i++) {
+            int index = CommonRandom.nextInt(titles.length);
+            String word = titles[index].getValue();
+            sb.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+            if (i < numWords - 1) {
+                sb.append(" ");
+            }
         }
 
         return sb.toString();
@@ -46,26 +54,26 @@ public final class CommonUtil {
         return sb.toString();
     }
 
-    public static <T> List<T> pageOf(List<T> items, String nextPage, Integer limit) {
+    public static <T> List<T> pageOf(String page, Integer limit, List<T> sort) {
         int nextPageNum = 1;
-        if (StringUtils.isNotBlank(nextPage)) {
-            nextPageNum = Math.max(nextPageNum, Integer.parseInt(nextPage));
+        if (StringUtils.isNotBlank(page)) {
+            nextPageNum = Math.max(nextPageNum, Integer.parseInt(page));
         }
 
-        int totalItemCount = items.size();
+        int totalItemCount = sort.size();
 
         int itemsPerPage = limit;
-        int totalPages = (int) Math.ceil((double) totalItemCount / itemsPerPage);
+        //int totalPages = (int) Math.ceil((double) totalItemCount / itemsPerPage);
 
         int startIndex = (nextPageNum - 1) * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, totalItemCount);
 
-        List<T> localItems = new ArrayList<>();
+        List<T> items = new ArrayList<>();
         for (int i = startIndex; i < endIndex; i++) {
-            localItems.add(items.get(i));
+            items.add(sort.get(i));
         }
 
-        return localItems;
+        return items;
     }
 
     private CommonUtil() {

@@ -17,4 +17,5 @@ public class MemberEntity {
     private String userName;
     private Integer userAge;
     private String country;
+    private String useYn;
 }
