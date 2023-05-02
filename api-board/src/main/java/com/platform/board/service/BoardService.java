@@ -12,28 +12,36 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
-
     private final ConcurrentLinkedQueue<Post> postList = new ConcurrentLinkedQueue<>();
+    private final List<Integer> postIndexList = IntStream.rangeClosed(1, 500)
+        .boxed()
+        .collect(Collectors.toList());
 
     @PostConstruct
     private void init() {
+        Collections.shuffle(postIndexList);
         createPost();
     }
 
     private void createPost() {
         final int maxUserId = 20;
-        int postId = Constant.ONE;
+        int postIndex = 0;
         for (int userId = Constant.ONE; userId <= maxUserId; userId++) {
             List<Post.PostInfo> postInfos = new ArrayList<>();
-            for (int localId = Constant.ONE; localId < CommonUtil.CommonRandom.nextInt(50) + 1; localId++, postId++) {
+            int numPosts = CommonUtil.CommonRandom.nextInt(25) + 1;
+            for (int localId = Constant.ONE; localId < numPosts; localId++, postIndex++) {
+                int newPostId = postIndexList.get(postIndex);
                 Post.PostInfo postInfo = Post.PostInfo.builder()
-                    .postId(postId)
+                    .postId(newPostId)
                     .title(CommonUtil.generateTitle())
                     .content(CommonUtil.generateContent())
                     .likesCount(CommonUtil.CommonRandom.nextInt(150))
