@@ -70,7 +70,7 @@ public class BoardService {
                 .findFirst()
                 .map(post -> {
                     List<Post.PostInfo> localList = Optional.ofNullable(post.getPostList())
-                        .map(list -> CommonUtil.pageOf(nextPage, limit, list))
+                        .map(list -> CommonUtil.pageOf(list, nextPage, limit))
                         .orElse(Collections.emptyList());
 
                     return Post.builder()

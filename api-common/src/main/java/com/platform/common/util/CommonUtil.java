@@ -47,20 +47,20 @@ public final class CommonUtil {
 
     public static String generateContent() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 100; i++) {
             int index = CommonRandom.nextInt(ALPHABET.length());
             sb.append(ALPHABET.charAt(index));
         }
         return sb.toString();
     }
 
-    public static <T> List<T> pageOf(String page, Integer limit, List<T> sort) {
+    public static <T> List<T> pageOf(List<T> items, String page, Integer limit) {
         int nextPageNum = 1;
         if (StringUtils.isNotBlank(page)) {
             nextPageNum = Math.max(nextPageNum, Integer.parseInt(page));
         }
 
-        int totalItemCount = sort.size();
+        int totalItemCount = items.size();
 
         int itemsPerPage = limit;
         //int totalPages = (int) Math.ceil((double) totalItemCount / itemsPerPage);
@@ -68,12 +68,12 @@ public final class CommonUtil {
         int startIndex = (nextPageNum - 1) * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, totalItemCount);
 
-        List<T> items = new ArrayList<>();
+        List<T> newItems = new ArrayList<>();
         for (int i = startIndex; i < endIndex; i++) {
-            items.add(sort.get(i));
+            newItems.add(items.get(i));
         }
 
-        return items;
+        return newItems;
     }
 
     private CommonUtil() {
