@@ -1,6 +1,6 @@
 package com.platform.member.repository;
 
-import com.platform.common.constant.Constant;
+import com.platform.common.constant.CommonConstants;
 import com.platform.member.entity.MemberEntity;
 import com.platform.common.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepository {
     private final Map<Integer, MemberEntity> userMap = new ConcurrentHashMap<>();
-    private final AtomicInteger globalIndex = new AtomicInteger(Constant.ONE);
+    private final AtomicInteger globalIndex = new AtomicInteger(CommonConstants.ONE);
 
     @PostConstruct
     private void init() {
@@ -35,7 +35,7 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .userName(CommonUtil.generateUserName())
                 .userAge(CommonUtil.CommonRandom.nextInt(60))
                 .country(CommonUtil.generateCountry())
-                .useYn(Constant.USE_Y)
+                .useYn(CommonConstants.USE_Y)
                 .build();
 
             userMap.put(globalIndex.getAndIncrement(), entity);
@@ -69,6 +69,6 @@ public class MemberRepositoryImpl implements MemberRepository {
             .stream()
             .mapToInt(Integer::intValue)
             .max()
-            .orElse(Constant.ZERO); // Concern about occurrence of IllegalArgumentException
+            .orElse(CommonConstants.ZERO); // Concern about occurrence of IllegalArgumentException
     }
 }

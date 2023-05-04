@@ -1,7 +1,7 @@
 package com.platform.board.service;
 
 import com.platform.board.dto.Post;
-import com.platform.common.constant.Constant;
+import com.platform.common.constant.CommonConstants;
 import com.platform.common.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,10 +34,10 @@ public class BoardService {
     private void createPost() {
         final int maxUserId = 20;
         int postIndex = 0;
-        for (int userId = Constant.ONE; userId <= maxUserId; userId++) {
+        for (int userId = CommonConstants.ONE; userId <= maxUserId; userId++) {
             List<Post.PostInfo> postInfos = new ArrayList<>();
             int numPosts = CommonUtil.CommonRandom.nextInt(25) + 1;
-            for (int localId = Constant.ONE; localId < numPosts; localId++, postIndex++) {
+            for (int localId = CommonConstants.ONE; localId < numPosts; localId++, postIndex++) {
                 int newPostId = postIndexList.get(postIndex);
                 Post.PostInfo postInfo = Post.PostInfo.builder()
                     .postId(newPostId)
@@ -63,14 +62,14 @@ public class BoardService {
     public Post getPostsByUserId(int userId, String nextPage, Integer limit) {
         if (limit > 0) {
             List<Post> filteredPosts = postList.stream()
-                .filter(post -> post.getUserId() == userId)
-                .toList();
+                .filter(post -> post.getUserId().equals(userId))
+                .collect(Collectors.toList());
 
             return filteredPosts.stream()
                 .findFirst()
                 .map(post -> {
                     List<Post.PostInfo> localList = Optional.ofNullable(post.getPostList())
-                        .map(list -> CommonUtil.pageOf(nextPage, limit, list))
+                        .map(list -> CommonUtil.pageOf(list, nextPage, limit))
                         .orElse(Collections.emptyList());
 
                     return Post.builder()
@@ -83,7 +82,7 @@ public class BoardService {
         }
 
         return postList.stream()
-            .filter(post -> post.getUserId() == userId)
+            .filter(post -> post.getUserId().equals(userId))
             .findAny()
             .orElse(null);
     }

@@ -1,6 +1,6 @@
 package com.platform.common.constant;
 
-public class Constant {
+public class CommonConstants {
     public static final String DATE_FORMAT_6 = "yyyyMM";
     public static final String DATE_FORMAT_8 = "yyyyMMdd";
     public static final String DATE_FORMAT_8_DASH = "yyyy-MM-dd";
@@ -25,6 +25,6 @@ public class Constant {
     public static final String GET = "GET";
     public static final String POST = "POST";
 
-    private Constant() {
+    private CommonConstants() {
     }
 }

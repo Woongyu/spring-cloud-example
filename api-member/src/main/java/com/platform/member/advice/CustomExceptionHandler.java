@@ -52,7 +52,7 @@ public class CustomExceptionHandler {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
-    protected ResponseEntity<BaseResponse> runtimeException(RuntimeException e) {
+    protected ResponseEntity<BaseResponse> handleRuntimeException(RuntimeException e) {
         return ResponseEntity.internalServerError().body(new BaseResponse(ErrorType.API_ERROR));
     }
 
