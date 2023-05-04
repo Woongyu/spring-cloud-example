@@ -104,7 +104,8 @@ public class MemberService {
             .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new APIException(ErrorType.API_ERROR)))
             .bodyToMono(PostResponse.class)
             .onErrorResume(throwable -> {
-                if (throwable instanceof WebClientResponseException e) {
+                if (throwable instanceof WebClientResponseException) {
+                    WebClientResponseException e = (WebClientResponseException) throwable;
                     if (e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
                         return Mono.error(new APIException(ErrorType.SERVER_ERROR));
                     }

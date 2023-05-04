@@ -6,9 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public final class CommonUtil {
     public static final Random CommonRandom = new SecureRandom();
@@ -32,17 +34,23 @@ public final class CommonUtil {
     public static String generateTitle() {
         StringBuilder sb = new StringBuilder();
         Title[] titles = Title.values();
-        int numWords = CommonRandom.nextInt(1, 4);
+        int numWords = getRandomInt(2, 4);
         for (int i = 0; i < numWords; i++) {
             int index = CommonRandom.nextInt(titles.length);
             String word = titles[index].getValue();
-            sb.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+            sb.append(word);
             if (i < numWords - 1) {
                 sb.append(" ");
             }
         }
 
-        return sb.toString();
+        return Arrays.stream(sb.toString().split("\\s"))
+            .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
+            .collect(Collectors.joining(" "));
+    }
+
+    private static int getRandomInt(int min, int max) {
+        return CommonRandom.nextInt((max - min) + 1) + min;
     }
 
     public static String generateContent() {

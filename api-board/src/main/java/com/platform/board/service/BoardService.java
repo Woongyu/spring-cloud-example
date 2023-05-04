@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -64,7 +63,7 @@ public class BoardService {
         if (limit > 0) {
             List<Post> filteredPosts = postList.stream()
                 .filter(post -> post.getUserId() == userId)
-                .toList();
+                .collect(Collectors.toList());
 
             return filteredPosts.stream()
                 .findFirst()
