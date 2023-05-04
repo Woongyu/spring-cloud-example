@@ -1,6 +1,7 @@
 package com.platform.member.repository;
 
 import com.platform.common.constant.CommonConstants;
+import com.platform.member.dto.enums.Grade;
 import com.platform.member.entity.MemberEntity;
 import com.platform.common.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,8 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .userName(CommonUtil.generateUserName())
                 .userAge(CommonUtil.CommonRandom.nextInt(60))
                 .country(CommonUtil.generateCountry())
+                .gradeTier(Grade.IRON.getTier())
+                .gradeName(Grade.IRON.getName())
                 .useYn(CommonConstants.USE_Y)
                 .build();
 
