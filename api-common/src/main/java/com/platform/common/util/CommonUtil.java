@@ -1,21 +1,19 @@
 package com.platform.common.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.platform.common.dto.enums.Content;
+import com.platform.common.dto.enums.ContentArticle;
 import com.platform.common.dto.enums.Title;
 import org.apache.commons.lang3.StringUtils;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public final class CommonUtil {
     public static final Random CommonRandom = new SecureRandom();
-    public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
     public static final TypeReference<Map<String, Object>> JsonTypeRef =
         new TypeReference<>() {
         };
@@ -38,15 +36,13 @@ public final class CommonUtil {
         for (int i = 0; i < numWords; i++) {
             int index = CommonRandom.nextInt(titles.length);
             String word = titles[index].getValue();
-            sb.append(word);
+            sb.append(i == 0 ? Character.toUpperCase(word.charAt(0)) + word.substring(1) : word);
             if (i < numWords - 1) {
                 sb.append(" ");
             }
         }
 
-        return Arrays.stream(sb.toString().split("\\s"))
-            .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
-            .collect(Collectors.joining(" "));
+        return sb.toString();
     }
 
     private static int getRandomInt(int min, int max) {
@@ -55,10 +51,21 @@ public final class CommonUtil {
 
     public static String generateContent() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 100; i++) {
-            int index = CommonRandom.nextInt(ALPHABET.length());
-            sb.append(ALPHABET.charAt(index));
+        int numWords = getRandomInt(5, 10);
+        for (int i = 0; i < numWords; i++) {
+            int index = CommonRandom.nextInt(Content.values().length);
+            String word = Content.values()[index].getValue();
+            sb.append(word);
+            if (i < numWords - 1) {
+                sb.append(" ");
+            }
         }
+
+        sb.append(".");
+        sb.insert(0, ContentArticle.values()[CommonRandom.nextInt(ContentArticle.values().length)].getValue().toUpperCase() + " ").append(" ");
+        sb.append(ContentArticle.values()[CommonRandom.nextInt(ContentArticle.values().length)].getValue()).append(" ");
+        sb.append(Content.values()[CommonRandom.nextInt(Content.values().length)].getValue().toLowerCase()).append(".");
+
         return sb.toString();
     }
 

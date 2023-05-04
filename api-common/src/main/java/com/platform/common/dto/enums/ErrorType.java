@@ -6,16 +6,23 @@ import java.util.Arrays;
 
 @Getter
 public enum ErrorType {
-
-    SUCCESS(200, Constants.SUCCESS, "성공"),
-    INVALID_PARAMS(400, "40001", "유효하지 않은 파라미터"),
-    NO_END_POINT(404, "40401", "존재하지 않는 엔드포인트"),
-    NO_DATA(404, "40402", "존재하지 않는 데이터"),
-    NO_USER(404, "40403", "존재하지 않는 사용자"),
-    SYSTEM_ERROR(500, "50001", "시스템 장애"),
-    API_ERROR(500, "50002", "API 요청 처리 실패"),
-    UNKNOWN_ERROR(500, "50004", "알 수 없는 에러"),
-    SERVER_ERROR(500, "server_error", "서버 오류");
+    SUCCESS(200, Constants.SUCCESS, "Success"),
+    INVALID_PARAMS(400, "40001", "Invalid parameters"),
+    AUTHENTICATION_FAILED(401, "40101", "Authentication failed"),
+    PAYMENT_REQUIRED(402, "40201", "Payment required"),
+    FORBIDDEN(403, "40301", "Forbidden access"),
+    ENDPOINT_NOT_FOUND(404, "40401", "Endpoint not found"),
+    DATA_NOT_FOUND(404, "40402", "Data not found"),
+    USER_NOT_FOUND(404, "40403", "User not found"),
+    TOO_MANY_REQUESTS(429, "42901", "Too many requests"),
+    SYSTEM_ERROR(500, "50001", "System error"),
+    API_ERROR(500, "50002", "API error"),
+    UNKNOWN_ERROR(500, "50004", "Unknown error"),
+    SERVER_ERROR(500, "server_error", "Server error"),
+    NOT_IMPLEMENTED(501, "50101", "Not implemented"),
+    BAD_GATEWAY(502, "50201", "Bad gateway"),
+    SERVICE_UNAVAILABLE(503, "50301", "Service unavailable"),
+    GATEWAY_TIMEOUT(504, "50401", "Gateway timeout");
 
     private final int httpStatus;
     private final String code;

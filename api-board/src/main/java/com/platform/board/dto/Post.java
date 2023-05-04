@@ -5,14 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 
 @Schema(name = "Post")
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 public class Post {
@@ -28,8 +26,7 @@ public class Post {
     @JsonProperty("post_list")
     private List<PostInfo> postList;
 
-    @Getter
-    @Setter
+    @Data
     @Builder
     @AllArgsConstructor
     public static class PostInfo {

@@ -2,7 +2,7 @@ package com.platform.member.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.platform.common.constant.Constant;
+import com.platform.common.constant.CommonConstants;
 import com.platform.common.dto.BaseResponse;
 import com.platform.common.dto.enums.ErrorType;
 import com.platform.common.exception.APIException;
@@ -96,11 +96,11 @@ public class MemberService {
             .get()
             .uri(uriBuilder -> uriBuilder
                 .path("/api/board/posts")
-                .queryParam(Constant.USER_ID, userId)
-                .queryParam(Constant.LIMIT, Constant.ZERO)
+                .queryParam(CommonConstants.USER_ID, userId)
+                .queryParam(CommonConstants.LIMIT, CommonConstants.ZERO)
                 .build())
             .retrieve()
-            .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new APIException(ErrorType.NO_DATA)))
+            .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new APIException(ErrorType.DATA_NOT_FOUND)))
             .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new APIException(ErrorType.API_ERROR)))
             .bodyToMono(PostResponse.class)
             .onErrorResume(throwable -> {
@@ -110,7 +110,7 @@ public class MemberService {
                         return Mono.error(new APIException(ErrorType.SERVER_ERROR));
                     }
                 } else if (throwable instanceof APIException) {
-                    return Mono.error(new APIException(ErrorType.NO_DATA));
+                    return Mono.error(new APIException(ErrorType.DATA_NOT_FOUND));
                 }
 
                 return Mono.error(new RuntimeException(throwable.getMessage()));
@@ -127,7 +127,7 @@ public class MemberService {
     }
 
     public Flux<PostResponse> getAllPosts() {
-        ParallelFlux<PostResponse> parallelFlux = Flux.range(Constant.ONE, memberRepository.findMaxUserId())
+        ParallelFlux<PostResponse> parallelFlux = Flux.range(CommonConstants.ONE, memberRepository.findMaxUserId())
             .parallel(defaultPoolSize)
             .runOn(Schedulers.parallel())
             .flatMap(userId -> webClient.mutate()
@@ -136,8 +136,8 @@ public class MemberService {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                     .path("/api/board/posts")
-                    .queryParam(Constant.USER_ID, userId)
-                    .queryParam(Constant.LIMIT, Constant.ZERO)
+                    .queryParam(CommonConstants.USER_ID, userId)
+                    .queryParam(CommonConstants.LIMIT, CommonConstants.ZERO)
                     .build())
                 .retrieve()
                 .bodyToFlux(PostResponse.class)
@@ -148,7 +148,7 @@ public class MemberService {
 
     private Mono<PostResponse> getRspCodeAndMsg(WebClientResponseException e, Integer userId) {
         ErrorType errorType = e.getStatusCode() == HttpStatus.NOT_FOUND
-            ? ErrorType.NO_DATA
+            ? ErrorType.DATA_NOT_FOUND
             : ErrorType.findByErrorType(e.getStatusCode().value());
         String responseBody = e.getResponseBodyAsString();
         String rspCode = errorType.getCode();
@@ -157,11 +157,11 @@ public class MemberService {
         try {
             Map<String, Object> resultMap = mapper.readValue(responseBody, CommonUtil.JsonTypeRef);
 
-            if (resultMap.containsKey(Constant.RSP_CODE)) {
-                rspCode = (String) resultMap.get(Constant.RSP_CODE);
+            if (resultMap.containsKey(CommonConstants.RSP_CODE)) {
+                rspCode = (String) resultMap.get(CommonConstants.RSP_CODE);
             }
-            if (resultMap.containsKey(Constant.RSP_MSG)) {
-                rspMsg = (String) resultMap.get(Constant.RSP_MSG);
+            if (resultMap.containsKey(CommonConstants.RSP_MSG)) {
+                rspMsg = (String) resultMap.get(CommonConstants.RSP_MSG);
             }
         } catch (JsonProcessingException jsonException) {
             log.warn("Http error with no json body");
@@ -177,11 +177,11 @@ public class MemberService {
                 List<TotalPost.PostSummary> postSummaries = new ArrayList<>();
                 for (PostResponse postResponse : postResponses) {
                     List<PostResponse.PostInfo> postInfoList = postResponse.getPostList();
-                    int postIndex = Constant.MINUS_ONE;
+                    int postIndex = CommonConstants.MINUS_ONE;
                     if (!ObjectUtils.isEmpty(postInfoList)) {
                         postIndex = IntStream.range(0, postInfoList.size())
                             .reduce((i, j) -> postInfoList.get(i).getLikesCount() > postInfoList.get(j).getLikesCount() ? i : j)
-                            .orElse(Constant.MINUS_ONE);
+                            .orElse(CommonConstants.MINUS_ONE);
                     }
 
                     postSummaries.add(buildPostSummary(postIndex, postResponse.getUserId(), postInfoList));
@@ -208,7 +208,7 @@ public class MemberService {
             postSummary = TotalPost.PostSummary.builder()
                 .userId(userId)
                 .title("No data")
-                .likesCount(Constant.ZERO)
+                .likesCount(CommonConstants.ZERO)
                 .build();
         }
 
