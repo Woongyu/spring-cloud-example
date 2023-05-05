@@ -3,7 +3,9 @@ package com.platform.common.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.platform.common.dto.enums.Content;
 import com.platform.common.dto.enums.ContentArticle;
+import com.platform.common.dto.enums.Country;
 import com.platform.common.dto.enums.Title;
+import com.platform.common.dto.enums.UserName;
 import org.apache.commons.lang3.StringUtils;
 
 import java.security.SecureRandom;
@@ -19,14 +21,11 @@ public final class CommonUtil {
         };
 
     public static String generateUserName() {
-        final String[] firstName = {"효리", "민수", "길동", "효복", "유지", "예진", "바다", "하늘"};
-        final String[] lastName = {"김", "이", "박", "정", "장", "송", "한", "신"};
-        return firstName[CommonRandom.nextInt(firstName.length)] + lastName[CommonRandom.nextInt(lastName.length)];
+        return UserName.generateFullName();
     }
 
     public static String generateCountry() {
-        final String[] countries = {"USA", "Canada", "France", "Germany", "Japan", "South Korea", "Brazil", "Australia", "India", "China"};
-        return countries[CommonRandom.nextInt(countries.length)];
+        return Country.getRandom().getName();
     }
 
     public static String generateTitle() {
