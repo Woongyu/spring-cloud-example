@@ -3,6 +3,7 @@ package com.platform.common.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.platform.common.dto.enums.Content;
 import com.platform.common.dto.enums.ContentArticle;
+import com.platform.common.dto.enums.Country;
 import com.platform.common.dto.enums.Title;
 import com.platform.common.dto.enums.UserName;
 import org.apache.commons.lang3.StringUtils;
@@ -24,8 +25,7 @@ public final class CommonUtil {
     }
 
     public static String generateCountry() {
-        final String[] countries = {"USA", "Canada", "France", "Germany", "Japan", "South Korea", "Brazil", "Australia", "India", "China"};
-        return countries[CommonRandom.nextInt(countries.length)];
+        return Country.getRandom().getName();
     }
 
     public static String generateTitle() {
