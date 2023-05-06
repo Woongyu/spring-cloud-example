@@ -2,9 +2,9 @@ package com.platform.member.controller;
 
 import com.platform.common.constant.CommonConstants;
 import com.platform.common.dto.BaseResponse;
+import com.platform.member.dto.MemberActivityResponse;
 import com.platform.member.dto.MemberDetail;
 import com.platform.member.dto.PostResponse;
-import com.platform.member.dto.MemberActivityResponse;
 import com.platform.member.dto.TotalPost;
 import com.platform.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @Tag(name = "회원 정보", description = "Member API")
 @Validated
@@ -39,7 +40,7 @@ public class MemberController {
     @GetMapping(value = "/member/{userId}",
         produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<MemberDetail.Response> getMemberDetail(@Parameter(description = "User ID", example = "1", required = true)
-                                                       @PathVariable(name = "userId") Integer userId) {
+                                                       @PathVariable(name = "userId") @NotNull Integer userId) {
         log.info("Detail userId [{}]", userId);
         return memberService.getMemberById(userId);
     }
@@ -63,7 +64,7 @@ public class MemberController {
 
     @Operation(summary = "회원 활동 현황 조회", description = "특정 회원의 활동 현황을 조회합니다.")
     @GetMapping("/member/activity")
-    public Mono<MemberActivityResponse> geMemberActivity(@RequestParam(name = CommonConstants.USER_ID, defaultValue = "1") int userId) {
+    public Mono<MemberActivityResponse> geMemberActivity(@RequestParam(name = CommonConstants.USER_ID, defaultValue = "1") @NotNull int userId) {
         log.info("Activity userId [{}]", userId);
         return memberService.geMemberActivity(userId);
     }
