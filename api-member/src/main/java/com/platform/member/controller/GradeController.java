@@ -1,6 +1,5 @@
 package com.platform.member.controller;
 
-import com.platform.common.dto.BaseResponse;
 import com.platform.member.dto.GradeResponse;
 import com.platform.member.dto.MemberGrade;
 import com.platform.member.service.GradeService;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Tag(name = "등급 정보", description = "Grade API")
 @Validated
@@ -36,11 +36,19 @@ public class GradeController {
         return gradeService.getAllGrade();
     }
 
-    @Operation(summary = "회원 등급 정보 수정",
-        description = "(단건) 회원의 등급 정보를 수정합니다.")
+    @Operation(summary = "회원 등급 정보 수정 - 단건",
+        description = "단일 회원의 등급 정보를 수정합니다.")
     @PatchMapping("/member/grade")
-    public Mono<BaseResponse> updateGradeForMember(@RequestBody @Valid MemberGrade.MemberInfo request){
-        log.info("Update Grade request [{}]", request.toString());
+    public Mono<MemberGrade.MemberUpdateResponse> updateGradeForMember(@RequestBody @Valid MemberGrade.MemberInfo request){
+        log.info("Update Member Grade request [{}]", request.toString());
         return gradeService.updateGradeForMember(request);
+    }
+
+    @Operation(summary = "회원 등급 정보 수정 - 다건",
+        description = "다수 회원의 등급 정보를 수정합니다.")
+    @PatchMapping("/members/grade")
+    public Mono<List<MemberGrade.MemberUpdateResponse>> updateGradeForMembers(@RequestBody @Valid MemberGrade request){
+        log.info("Update Members Grade request [{}]", request.toString());
+        return gradeService.updateGradeForMembers(request);
     }
 }
