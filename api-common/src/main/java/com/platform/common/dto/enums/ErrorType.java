@@ -2,8 +2,6 @@ package com.platform.common.dto.enums;
 
 import lombok.Getter;
 
-import java.util.Arrays;
-
 @Getter
 public enum ErrorType {
     SUCCESS(200, Constants.SUCCESS, "Success"),
@@ -36,12 +34,5 @@ public enum ErrorType {
 
     private static class Constants {
         public static final String SUCCESS = "00000";
-    }
-
-    public static ErrorType findByErrorType(int status) {
-        return Arrays.stream(ErrorType.values())
-            .filter(errorType -> errorType.getHttpStatus() == status)
-            .findAny()
-            .orElse(null);
     }
 }
