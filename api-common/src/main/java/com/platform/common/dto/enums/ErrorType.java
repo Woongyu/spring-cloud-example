@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum ErrorType {
     SUCCESS(200, Constants.SUCCESS, "Success"),
     INVALID_PARAMS(400, "40001", "Invalid parameters"),
+    BAD_REQUEST(400, "40002", "Bad Request"),
     AUTHENTICATION_FAILED(401, "40101", "Authentication failed"),
     PAYMENT_REQUIRED(402, "40201", "Payment required"),
     FORBIDDEN(403, "40301", "Forbidden access"),
