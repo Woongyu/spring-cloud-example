@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 public class GradeService {
     private final MemberRepository memberRepository;
 
-    public Mono<GradeResponse> getAllGrades() {
-        return Mono.fromCallable(this::getGrades)
+    public Mono<GradeResponse> getAllGrade() {
+        return Mono.fromCallable(this::getGrade)
             .subscribeOn(Schedulers.boundedElastic())
             .onErrorResume(throwable -> {
                 log.error("Error: {}", throwable.getMessage());
@@ -36,13 +36,13 @@ public class GradeService {
             });
     }
 
-    private GradeResponse getGrades() throws APIException {
-        List<Grade> grades = Arrays.asList(Grade.values());
-        if (grades.isEmpty()) {
+    private GradeResponse getGrade() throws APIException {
+        List<Grade> gradeList = Arrays.asList(Grade.values());
+        if (gradeList.isEmpty()) {
             throw new APIException(ErrorType.DATA_NOT_FOUND);
         }
 
-        List<GradeResponse.GradeInfo> gradeInfos = grades.stream()
+        List<GradeResponse.GradeInfo> gradeInfos = gradeList.stream()
             .map(grade -> GradeResponse.GradeInfo.builder()
                 .tier(grade.getTier())
                 .minLikes(grade.getMinLikes())
@@ -58,8 +58,8 @@ public class GradeService {
         return response;
     }
 
-    public Mono<BaseResponse> updateGradeForMember(Integer userId, MemberGrade.MemberInfo request) {
-        Optional<MemberEntity> optionalMember = memberRepository.findByUserId(userId);
+    public Mono<BaseResponse> updateGradeForMember(MemberGrade.MemberInfo request) {
+        Optional<MemberEntity> optionalMember = memberRepository.findByUserId(request.getUserId());
         if (optionalMember.isPresent()) {
             MemberEntity entity = optionalMember.get();
             entity.updateTier(request.getTier());

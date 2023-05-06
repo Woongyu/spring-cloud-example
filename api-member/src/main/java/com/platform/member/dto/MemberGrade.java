@@ -13,7 +13,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Schema(name = "MemberGrades")
+@Schema(name = "MembersGrade")
 @Getter
 @Setter
 @NoArgsConstructor
