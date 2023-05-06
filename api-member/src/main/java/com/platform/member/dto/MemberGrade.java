@@ -14,16 +14,18 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Schema(name = "MembersGrade")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MemberGrade extends BaseResponse {
+public class MemberGrade {
 
+    @Schema(description = "Member Cnt", defaultValue = "1")
     @JsonProperty("member_cnt")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Integer memberCnt;
 
+    @NotNull
+    @Schema(description = "Member List", nullable = false)
     @JsonProperty("member_list")
     private List<MemberInfo> memberList;
 
@@ -44,5 +46,22 @@ public class MemberGrade extends BaseResponse {
         @JsonProperty("tier")
         @JsonFormat(shape = JsonFormat.Shape.STRING)
         private Integer tier;
+    }
+
+    @Schema(name = "MemberUpdateResponse")
+    @Getter
+    @Setter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class MemberUpdateResponse extends BaseResponse {
+
+        @JsonProperty("user_id")
+        @JsonFormat(shape = JsonFormat.Shape.STRING)
+        private Integer userId;
+
+        public MemberUpdateResponse(Integer userId, String rspCode, String rspMsg) {
+            this.userId = userId;
+            this.rspCode = rspCode;
+            this.rspMsg = rspMsg;
+        }
     }
 }
