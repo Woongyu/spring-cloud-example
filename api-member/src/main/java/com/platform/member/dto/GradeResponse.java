@@ -34,9 +34,9 @@ public class GradeResponse extends BaseResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class GradeInfo {
 
-        @JsonProperty("tire")
+        @JsonProperty("tier")
         @JsonFormat(shape = JsonFormat.Shape.STRING)
-        private Integer tire;
+        private Integer tier;
 
         @JsonProperty("min_likes")
         @JsonFormat(shape = JsonFormat.Shape.STRING)

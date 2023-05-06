@@ -5,6 +5,7 @@ import com.platform.member.dto.enums.Grade;
 import com.platform.member.entity.MemberEntity;
 import com.platform.common.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
@@ -36,7 +37,7 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .userName(CommonUtil.generateUserName())
                 .userAge(CommonUtil.CommonRandom.nextInt(60))
                 .country(CommonUtil.generateCountry())
-                .gradeTier(Grade.IRON.getTier())
+                .tier(Grade.IRON.getTier())
                 .gradeName(Grade.IRON.getName())
                 .useYn(CommonConstants.USE_Y)
                 .build();
@@ -73,5 +74,19 @@ public class MemberRepositoryImpl implements MemberRepository {
             .mapToInt(Integer::intValue)
             .max()
             .orElse(CommonConstants.ZERO); // Concern about occurrence of IllegalArgumentException
+    }
+
+    @Override
+    public Integer updateGrade(MemberEntity entity) {
+        int userId = entity.getUserId();
+        int tier = entity.getTier();
+        MemberEntity memberEntity = userMap.get(userId);
+        if (!ObjectUtils.isEmpty(memberEntity)) {
+            memberEntity.updateTier(tier);
+            userMap.replace(userId, memberEntity);
+            return userId;
+        } else {
+            return null;
+        }
     }
 }

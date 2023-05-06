@@ -10,4 +10,5 @@ public interface MemberRepository {
     Integer save(MemberEntity entity);
     Flux<MemberEntity> findAll();
     Integer findMaxUserId();
+    Integer updateGrade(MemberEntity entity);
 }
