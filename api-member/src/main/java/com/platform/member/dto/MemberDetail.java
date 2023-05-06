@@ -53,11 +53,15 @@ public class MemberDetail {
         @JsonFormat(shape = JsonFormat.Shape.STRING)
         private Integer userAge;
 
-        @JsonProperty("grade_name")
-        private String gradeName;
-
         @JsonProperty("country")
         private String country;
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING)
+        @JsonProperty("tier")
+        private Integer tier;
+
+        @JsonProperty("grade_name")
+        private String gradeName;
     }
 
     private MemberDetail() {
