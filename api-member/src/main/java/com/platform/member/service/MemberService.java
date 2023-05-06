@@ -38,10 +38,8 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-
     private final WebClient webClient;
     private final MemberRepository memberRepository;
-
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Value("${location.target-url.board}")

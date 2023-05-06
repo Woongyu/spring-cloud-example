@@ -1,5 +1,5 @@
 # spring-cloud-example
-An example project for practicing Spring Cloud and MSA Architecture.
+An example project for practicing Spring Cloud and Microservices Architecture.
 
 This is a personal practice project that includes the following elements:
 
