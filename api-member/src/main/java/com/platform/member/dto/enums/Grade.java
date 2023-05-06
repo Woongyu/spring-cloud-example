@@ -2,6 +2,8 @@ package com.platform.member.dto.enums;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public enum Grade {
     IRON(0, 0, 39, "Iron"),
@@ -23,6 +25,13 @@ public enum Grade {
         this.minLikes = minLikes;
         this.maxLikes = maxLikes;
         this.name = name;
+    }
+
+    public static Grade from(final int tier) {
+        return Arrays.stream(Grade.values())
+            .filter(grade -> grade.tier == tier)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("This code doesn't exist."));
     }
 
     public static Grade fromLikesCount(int likesCount) {

@@ -65,8 +65,7 @@ public class MemberService {
         return Mono.fromSupplier(() -> memberRepository.save(entity))
             .flatMap(result -> {
                 if (result > 0) {
-                    BaseResponse response = new BaseResponse();
-                    return Mono.just(response);
+                    return Mono.just(new BaseResponse());
                 } else {
                     return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to save member"));
                 }
