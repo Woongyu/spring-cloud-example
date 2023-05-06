@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Optional;
+
 @Getter
 @Setter
 @Builder
@@ -22,8 +24,14 @@ public class MemberEntity {
     private String gradeName;
     private String useYn;
 
-    public void updateTier(Integer tier) {
-        this.tier = tier;
-        this.gradeName = Grade.from(tier).getName();
+    public Optional<MemberEntity> updateTier(Integer tier) {
+        try {
+            Grade grade = Grade.from(tier);
+            this.tier = tier;
+            this.gradeName = grade.getName();
+            return Optional.of(this);
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 }

@@ -26,7 +26,7 @@ public class BoardController {
 
     @Operation(summary = "유저별 게시물 조회", description = "유저별 게시물을 조회합니다.")
     @GetMapping("/api/board/posts")
-    public ResponseEntity<Post> getPostsByUserId(@RequestParam(name = CommonConstants.USER_ID, defaultValue = "1") int userId,
+    public ResponseEntity<Post> getPostsByUserId(@RequestParam(name = CommonConstants.USER_ID, defaultValue = "1") @NotNull int userId,
                                                  @RequestParam(name = CommonConstants.NEXT_PAGE, required = false) String nextPage,
                                                  @RequestParam(name = CommonConstants.LIMIT, defaultValue = "0") @NotNull Integer limit) {
         log.info("Posts userId [{}]", userId);

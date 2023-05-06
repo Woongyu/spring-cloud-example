@@ -79,14 +79,13 @@ public class MemberRepositoryImpl implements MemberRepository {
     @Override
     public Integer updateGrade(MemberEntity entity) {
         int userId = entity.getUserId();
-        int tier = entity.getTier();
         MemberEntity memberEntity = userMap.get(userId);
         if (!ObjectUtils.isEmpty(memberEntity)) {
-            memberEntity.updateTier(tier);
-            userMap.replace(userId, memberEntity);
+            Optional<MemberEntity> updatedEntity = memberEntity.updateTier(entity.getTier());
+            updatedEntity.ifPresent(updated -> userMap.put(userId, updated));
             return userId;
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

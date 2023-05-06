@@ -144,9 +144,11 @@ public class MemberService {
     }
 
     private Mono<PostResponse> getRspCodeAndMsg(WebClientResponseException e, Integer userId) {
-        ErrorType errorType = e.getStatusCode() == HttpStatus.NOT_FOUND
-            ? ErrorType.DATA_NOT_FOUND
-            : ErrorType.findByErrorType(e.getStatusCode().value());
+        ErrorType errorType = ErrorType.UNKNOWN_ERROR;
+        if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+            errorType = ErrorType.DATA_NOT_FOUND;
+        }
+
         String responseBody = e.getResponseBodyAsString();
         String rspCode = errorType.getCode();
         String rspMsg = errorType.getMessage();

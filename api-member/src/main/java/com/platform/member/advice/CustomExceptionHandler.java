@@ -1,6 +1,7 @@
 package com.platform.member.advice;
 
 import com.platform.common.dto.BaseResponse;
+import com.platform.common.dto.ErrorResponse;
 import com.platform.common.dto.enums.ErrorType;
 import com.platform.common.exception.APIException;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +35,11 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    protected ResponseEntity<BaseResponse> handleResponseStatusException(ResponseStatusException e) {
+    protected ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException e) {
         log.error("ResponseStatusException ::", e);
 
-        HttpStatus status = e.getStatus();
-        BaseResponse response = new BaseResponse(ErrorType.findByErrorType(status.value()));
-        return ResponseEntity.status(status).body(response);
+        ErrorResponse errorResponse = new ErrorResponse(e.getStatus().value(), e.getReason());
+        return ResponseEntity.status(e.getRawStatusCode()).body(errorResponse);
     }
 
     @ExceptionHandler(APIException.class)
@@ -65,5 +65,12 @@ public class CustomExceptionHandler {
             .getAllErrors()
             .forEach(error -> errors.put(((FieldError) error).getField(), error.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error("IllegalArgumentException ::", e);
+
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
