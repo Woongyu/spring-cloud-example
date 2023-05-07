@@ -10,6 +10,7 @@ import com.platform.member.entity.MemberEntity;
 import com.platform.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -60,7 +61,7 @@ public class GradeService {
         return response;
     }
 
-    public Mono<MemberGrade.MemberUpdateResponse> updateGradeForMember(MemberGrade.MemberInfo request) {
+    public Mono<MemberGrade.GrdUpdRes> updateGradeForMember(MemberGrade.MemberInfo request) {
         MemberGrade memberGrade = new MemberGrade();
         memberGrade.setMemberCnt(CommonConstants.ONE);
         memberGrade.setMemberList(Collections.singletonList(request));
@@ -71,45 +72,50 @@ public class GradeService {
                 .orElse(null)));
     }
 
-    public Mono<List<MemberGrade.MemberUpdateResponse>> updateGradeForMembers(MemberGrade request) {
-        List<Mono<MemberGrade.MemberUpdateResponse>> responseList = request.getMemberList()
+    public Mono<List<MemberGrade.GrdUpdRes>> updateGradeForMembers(MemberGrade request) {
+        List<Mono<MemberGrade.GrdUpdRes>> responseList = request.getMemberList()
             .stream()
             .map(memberInfo -> {
                 Integer userId = memberInfo.getUserId();
+                Integer tier = memberInfo.getTier();
+                if (ObjectUtils.anyNull(userId, tier)) {
+                    return Mono.just(new MemberGrade.GrdUpdRes(ErrorType.INVALID_PARAMS, userId));
+                }
+
                 return memberRepository.findByUserId(userId)
                     .map(entity -> {
-                        if (!entity.getTier().equals(memberInfo.getTier())) {
-                            Optional<MemberEntity> updatedEntity = entity.updateTier(memberInfo.getTier());
+                        if (!entity.getTier().equals(tier)) {
+                            Optional<MemberEntity> updatedEntity = entity.updateTier(tier);
                             return updatedEntity.map(memberEntity -> updateGrade(memberEntity, userId))
-                                .orElseGet(() -> Mono.just(new MemberGrade.MemberUpdateResponse(userId, ErrorType.BAD_REQUEST.getCode(), "Invalid tier value")));
+                                .orElseGet(() -> Mono.just(new MemberGrade.GrdUpdRes(userId, ErrorType.BAD_REQUEST.getCode(), "Invalid tier value")));
                         } else {
                             // When the tier is the same, events are skipped to improve performance
-                            return Mono.just(new MemberGrade.MemberUpdateResponse(userId, ErrorType.SUCCESS.getCode(), ErrorType.SUCCESS.getMessage()));
+                            return Mono.just(new MemberGrade.GrdUpdRes(ErrorType.SUCCESS, userId));
                         }
                     })
-                    .orElseGet(() -> Mono.just(new MemberGrade.MemberUpdateResponse(userId, ErrorType.USER_NOT_FOUND.getCode(), ErrorType.USER_NOT_FOUND.getMessage())));
+                    .orElseGet(() -> Mono.just(new MemberGrade.GrdUpdRes(ErrorType.USER_NOT_FOUND, userId)));
             })
             .collect(Collectors.toList());
 
         return Mono.zip(responseList, responses -> Arrays.stream(responses)
-            .map(response -> (MemberGrade.MemberUpdateResponse) response)
+            .map(response -> (MemberGrade.GrdUpdRes) response)
             .collect(Collectors.toList()));
     }
 
-    private Mono<MemberGrade.MemberUpdateResponse> updateGrade(MemberEntity entity, Integer userId) {
+    private Mono<MemberGrade.GrdUpdRes> updateGrade(MemberEntity entity, Integer userId) {
         return Mono.fromSupplier(() -> memberRepository.updateGrade(entity))
             .map(result -> {
                 if (result > 0) {
-                    return new MemberGrade.MemberUpdateResponse(userId, ErrorType.SUCCESS.getCode(), ErrorType.SUCCESS.getMessage());
+                    return new MemberGrade.GrdUpdRes(ErrorType.SUCCESS, userId);
                 } else {
-                    return new MemberGrade.MemberUpdateResponse(userId, ErrorType.DATA_NOT_FOUND.getCode(), ErrorType.DATA_NOT_FOUND.getMessage());
+                    return new MemberGrade.GrdUpdRes(ErrorType.DATA_NOT_FOUND, userId);
                 }
             })
             .onErrorResume(throwable -> {
                 if (throwable instanceof HttpClientErrorException) {
-                    return Mono.just(new MemberGrade.MemberUpdateResponse(userId, ErrorType.BAD_REQUEST.getCode(), ErrorType.BAD_REQUEST.getMessage()));
+                    return Mono.just(new MemberGrade.GrdUpdRes(ErrorType.BAD_REQUEST, userId));
                 } else {
-                    return Mono.just(new MemberGrade.MemberUpdateResponse(userId, ErrorType.UNKNOWN_ERROR.getCode(), ErrorType.UNKNOWN_ERROR.getMessage()));
+                    return Mono.just(new MemberGrade.GrdUpdRes(ErrorType.UNKNOWN_ERROR, userId));
                 }
             });
     }
