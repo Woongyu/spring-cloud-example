@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.platform.common.dto.BaseResponse;
+import com.platform.common.dto.enums.ErrorType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.Getter;
@@ -48,17 +49,22 @@ public class MemberGrade {
         private Integer tier;
     }
 
-    @Schema(name = "MemberUpdateResponse")
+    @Schema(name = "MemberGradeUpdateResponse")
     @Getter
     @Setter
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class MemberUpdateResponse extends BaseResponse {
+    public static class GrdUpdRes extends BaseResponse {
 
         @JsonProperty("user_id")
         @JsonFormat(shape = JsonFormat.Shape.STRING)
         private Integer userId;
 
-        public MemberUpdateResponse(Integer userId, String rspCode, String rspMsg) {
+        public GrdUpdRes(ErrorType errorType, Integer userId) {
+            super(errorType);
+            this.userId = userId;
+        }
+
+        public GrdUpdRes(Integer userId, String rspCode, String rspMsg) {
             this.userId = userId;
             this.rspCode = rspCode;
             this.rspMsg = rspMsg;

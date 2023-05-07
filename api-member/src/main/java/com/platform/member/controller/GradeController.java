@@ -39,7 +39,7 @@ public class GradeController {
     @Operation(summary = "회원 등급 정보 수정 - 단건",
         description = "단일 회원의 등급 정보를 수정합니다.")
     @PatchMapping("/member/grade")
-    public Mono<MemberGrade.MemberUpdateResponse> updateGradeForMember(@RequestBody @Valid MemberGrade.MemberInfo request){
+    public Mono<MemberGrade.GrdUpdRes> updateGradeForMember(@RequestBody @Valid MemberGrade.MemberInfo request){
         log.info("Update Member Grade request [{}]", request.toString());
         return gradeService.updateGradeForMember(request);
     }
@@ -47,7 +47,7 @@ public class GradeController {
     @Operation(summary = "회원 등급 정보 수정 - 다건",
         description = "다수 회원의 등급 정보를 수정합니다.")
     @PatchMapping("/members/grade")
-    public Mono<List<MemberGrade.MemberUpdateResponse>> updateGradeForMembers(@RequestBody @Valid MemberGrade request){
+    public Mono<List<MemberGrade.GrdUpdRes>> updateGradeForMembers(@RequestBody @Valid MemberGrade request){
         log.info("Update Members Grade request [{}]", request.toString());
         return gradeService.updateGradeForMembers(request);
     }
