@@ -44,7 +44,7 @@ public final class CommonUtil {
         return sb.toString();
     }
 
-    private static int getRandomInt(int min, int max) {
+    private int getRandomInt(int min, int max) {
         return CommonRandom.nextInt((max - min) + 1) + min;
     }
 
