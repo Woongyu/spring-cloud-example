@@ -15,7 +15,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 //@Entity
-public class MemberEntity {
+public class MemberEntity extends BaseDateEntity {
     private Integer userId;
     private String userName;
     private Integer userAge;
