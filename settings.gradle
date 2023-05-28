@@ -2,4 +2,5 @@ rootProject.name = 'spring-cloud-example'
 include 'api-common'
 include 'api-member'
 include 'api-board'
+include 'batch-server'
 
